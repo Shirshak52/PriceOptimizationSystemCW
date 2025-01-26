@@ -48,3 +48,15 @@ desktop.ini
 *.egg-info/
 dist/
 build/
+
+# Node modules
+/node_modules/
+
+# Tailwind output CSS
+/app/static/dist/css/output.css
+
+# Package lock
+package-lock.json
+
+# Flowbite configuration (if any specific generated config files exist)
+flowbite.config.js

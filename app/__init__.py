@@ -19,6 +19,13 @@ def create_app():
     with app.app_context():
 
         # Import model classes for migration
+        from app.models.supermarket import Supermarket
+        from app.models.branch import Branch
+        from app.models.dataset_file import DatasetFile
+        from app.models.optimization import Optimization
+        from app.models.prediction import Prediction
+        from app.models.segmentation import Segmentation
+        from app.models.cluster import Cluster
 
         # Setup admin views
 

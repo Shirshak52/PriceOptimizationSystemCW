@@ -19,6 +19,10 @@ fyp-venv/
 *.db
 *.sqlite3
 
+# SQL scripts
+*.sql
+scripts/
+
 # Pytest and coverage
 .pytest_cache/
 .coverage

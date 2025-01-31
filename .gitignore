@@ -9,6 +9,7 @@ __pycache__/
 # Flask-specific
 instance/
 *.log
+pwhash.py
 
 # Virtual environment
 venv/

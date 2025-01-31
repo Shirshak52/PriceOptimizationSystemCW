@@ -1,10 +1,11 @@
+from flask_security import UserMixin
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from app import db
 
 
 # User class
-class Branch(db.Model):
+class Branch(db.Model, UserMixin):
     # Name of table in database
     __tablename__ = "branch"
 

@@ -1,11 +1,13 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_security import Security, SQLAlchemyUserDatastore
 from flask_migrate import Migrate
 from app.config import Config
 
 # Initialize addon instances
 db = SQLAlchemy()
 migrate = Migrate()
+security = Security()
 
 
 def create_app():
@@ -13,19 +15,25 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Register Flask extensions
     db.init_app(app)
     migrate.init_app(app, db)
 
+    from app.models.Branch.model import Branch
+
+    user_datastore = SQLAlchemyUserDatastore(db, Branch)
+    security.init_app(app, user_datastore)
+
+    # Within the app context
     with app.app_context():
 
         # Import model classes for migration
-        from app.models.supermarket import Supermarket
-        from app.models.branch import Branch
-        from app.models.dataset_file import DatasetFile
-        from app.models.optimization import Optimization
-        from app.models.prediction import Prediction
-        from app.models.segmentation import Segmentation
-        from app.models.cluster import Cluster
+        from app.models.Supermarket.model import Supermarket
+        from app.models.DatasetFile.model import DatasetFile
+        from app.models.Optimization.model import Optimization
+        from app.models.Prediction.model import Prediction
+        from app.models.Segmentation.model import Segmentation
+        from app.models.Cluster.model import Cluster
 
         # Setup admin views
 

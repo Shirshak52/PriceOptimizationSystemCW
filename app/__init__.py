@@ -21,7 +21,7 @@ def create_app():
 
     from app.models.Branch.model import Branch
 
-    user_datastore = SQLAlchemyUserDatastore(db, Branch)
+    user_datastore = SQLAlchemyUserDatastore(db, Branch, None)
     security.init_app(app, user_datastore)
 
     # Within the app context
@@ -39,10 +39,13 @@ def create_app():
 
         # Import routes
         from app.blueprints.main.routes import index
+        from app.blueprints.login.routes import login
 
         # Register blueprints
         from app.blueprints.main import main_bp
+        from app.blueprints.login import login_bp
 
         app.register_blueprint(main_bp)
+        app.register_blueprint(login_bp)
 
     return app

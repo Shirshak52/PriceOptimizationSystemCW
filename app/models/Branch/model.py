@@ -16,6 +16,11 @@ class Branch(db.Model, UserMixin):
         default=uuid.uuid4,
     )
 
+    # fs-uniquifier (for Flask-Security 4.0+)
+    fs_uniquifier = db.Column(
+        db.String(64), unique=True, nullable=False, default=lambda: str(uuid.uuid4())
+    )
+
     # Name
     name = db.Column(db.String(50), nullable=False)
 
@@ -30,6 +35,9 @@ class Branch(db.Model, UserMixin):
 
     # Password
     password = db.Column(db.String(300), nullable=False)
+
+    # Role
+    role = db.Column(db.String(20), nullable=False, default="user")  # Admin or user
 
     # Supermarket ID (Foreign key)
     supermarket_id = db.Column(

@@ -36,6 +36,9 @@ class Branch(db.Model, UserMixin):
     # Password
     password = db.Column(db.String(300), nullable=False)
 
+    # Status
+    active = db.Column(db.Boolean, default=True)
+
     # Role
     role = db.Column(db.String(20), nullable=False, default="user")  # Admin or user
 

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_migrate import Migrate
@@ -13,6 +13,7 @@ security = Security()
 def create_app():
     # Create and configure the Flask app
     app = Flask(__name__)
+    app.jinja_loader.searchpath.append("app/blueprints/auth/templates")
     app.config.from_object(Config)
 
     # Register Flask extensions
@@ -39,13 +40,13 @@ def create_app():
 
         # Import routes
         from app.blueprints.main.routes import index
-        from app.blueprints.login.routes import login
+        from app.blueprints.auth.routes import login, logout
 
         # Register blueprints
         from app.blueprints.main import main_bp
-        from app.blueprints.login import login_bp
+        from app.blueprints.auth import auth_bp
 
         app.register_blueprint(main_bp)
-        app.register_blueprint(login_bp)
+        app.register_blueprint(auth_bp)
 
     return app

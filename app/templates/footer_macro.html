@@ -1,0 +1,16 @@
+{% macro footer() %}
+<footer class="bg-fyp-primary-100 rounded-lg shadow-sm dark:bg-gray-900 m-4">
+    <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+        <hr class="my-6 border-white sm:mx-auto dark:border-gray-700 lg:my-8" />
+        <span
+            class="block text-sm text-white sm:text-center dark:text-gray-400"
+        >
+            © 2025
+            <a href="{{ url_for('main.index') }}" class="hover:underline">
+                OptiPrice
+            </a>
+            . All Rights Reserved.
+        </span>
+    </div>
+</footer>
+{% endmacro %}

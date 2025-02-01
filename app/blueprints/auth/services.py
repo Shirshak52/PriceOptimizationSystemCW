@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash
 
 
 class LoginService:
+    @staticmethod
     def verify_password(email, password):
         branch = BranchUserCrud.get_user_by_email(email)
 

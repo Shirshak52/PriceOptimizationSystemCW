@@ -17,17 +17,13 @@
         />
     </head>
 
-    <body class="pt-20 bg-fyp-primary-100">
-        <!-- Navbar -->
-        {% from "navbar_macro.html" import navbar %} {{navbar()}}
-
+    <body class="pt-20 bg-gray-50 flex flex-col items-center justify-center">
         <!-- Main Content -->
-        <div class="container mx-auto p-6">
+        <div
+            class="w-full max-w-md p-8 bg-fyp-secondary-100 rounded-lg shadow-lg"
+        >
             {% block content %}{% endblock %}
         </div>
-
-        <!-- Footer -->
-        {% from "footer_macro.html" import footer %} {{footer()}}
 
         <!-- Flowbite JS -->
         <script src="{{ url_for('static', filename='dist/js/flowbite.min.js') }}"></script>

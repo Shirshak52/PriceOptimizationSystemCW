@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Price Optimization System{% endblock %}</title>
+
+    <!-- Tailwind & Flowbite -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Include Navbar -->
+    {% include "macros/navbar.html" %}
+
+    <!-- Flash Messages -->
+    {% include "macros/flash_messages.html" %}
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-10 p-4 bg-gray-200 text-gray-700">
+        &copy; 2025 Price Optimization System
+    </footer>
+</body>
+
+</html>

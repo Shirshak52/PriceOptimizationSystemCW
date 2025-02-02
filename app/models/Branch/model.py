@@ -1,11 +1,11 @@
-from flask_security import UserMixin
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
+from flask_login import UserMixin
 from app import db
 
 
 # User class
-class Branch(db.Model, UserMixin):
+class Branch(UserMixin, db.Model):
     # Name of table in database
     __tablename__ = "branch"
 
@@ -14,11 +14,6 @@ class Branch(db.Model, UserMixin):
         UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
-    )
-
-    # fs-uniquifier (for Flask-Security 4.0+)
-    fs_uniquifier = db.Column(
-        db.String(64), unique=True, nullable=False, default=lambda: str(uuid.uuid4())
     )
 
     # Name
@@ -35,9 +30,6 @@ class Branch(db.Model, UserMixin):
 
     # Password
     password = db.Column(db.String(300), nullable=False)
-
-    # Status
-    active = db.Column(db.Boolean, default=True)
 
     # Role
     role = db.Column(db.String(20), nullable=False, default="user")  # Admin or user

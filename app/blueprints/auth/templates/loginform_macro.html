@@ -9,38 +9,68 @@
 
     <!-- Email -->
     <div class="mb-4">
+        <!-- Label -->
         <label
             for="email"
             class="block text-sm font-medium text-gray-900 dark:text-white"
         >
-            Email
+            {{ form.email.label }}
         </label>
+
+        <!-- Input field -->
         {{ form.email(class="w-full bg-gray-100 border border-gray-300
         text-gray-900 text-sm rounded-md focus:ring-fyp-tertiary-100
         focus:border-fyp-tertiary-100 block p-2.5 dark:bg-gray-700
         dark:border-gray-600 dark:text-white dark:focus:ring-fyp-tertiary-100
         dark:focus:border-fyp-tertiary-100 transition") }}
+
+        <!--  Validator error messages -->
+        {% if form.email.errors %}
+        <ul
+            class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            role="alert"
+        >
+            {% for error in form.email.errors %}
+            <li class="font-medium">{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 
     <!-- Password -->
     <div class="mb-6">
+        <!-- Label -->
         <label
             for="password"
             class="block text-sm font-medium text-gray-900 dark:text-white"
         >
-            Password
+            {{ form.password.label }}
         </label>
+
+        <!-- Input field -->
         {{ form.password(class="w-full bg-gray-100 border border-gray-300
         text-gray-900 text-sm rounded-md focus:ring-fyp-tertiary-100
         focus:border-fyp-tertiary-100 block p-2.5 dark:bg-gray-700
         dark:border-gray-600 dark:text-white dark:focus:ring-fyp-tertiary-100
         dark:focus:border-fyp-tertiary-100 transition") }}
+
+        <!--  Validator error messages -->
+        {% if form.password.errors %}
+        <ul
+            class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            role="alert"
+        >
+            {% for error in form.password.errors %}
+            <li class="font-medium">{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 
     <!-- Login button -->
     <button
         type="submit"
-        class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 hover:scale-105 focus:ring-4 focus:outline-none focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm px-5 py-2.5 text-center"
+        class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 hover:scale-100 focus:ring-4 focus:outline-none focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm px-5 py-2.5 text-center"
     >
         {{ form.submit }}
     </button>

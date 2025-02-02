@@ -1,35 +1,31 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_security import Security, SQLAlchemyUserDatastore
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from app.config import Config
 
 # Initialize addon instances
 db = SQLAlchemy()
 migrate = Migrate()
-security = Security()
+login_manager = LoginManager()
 
 
 def create_app():
     # Create and configure the Flask app
     app = Flask(__name__)
-    app.jinja_loader.searchpath.append("app/blueprints/auth/templates")
     app.config.from_object(Config)
 
     # Register Flask extensions
     db.init_app(app)
     migrate.init_app(app, db)
-
-    from app.models.Branch.model import Branch
-
-    user_datastore = SQLAlchemyUserDatastore(db, Branch, None)
-    security.init_app(app, user_datastore)
+    login_manager.init_app(app)
 
     # Within the app context
     with app.app_context():
 
         # Import model classes for migration
         from app.models.Supermarket.model import Supermarket
+        from app.models.Branch.model import Branch
         from app.models.DatasetFile.model import DatasetFile
         from app.models.Optimization.model import Optimization
         from app.models.Prediction.model import Prediction

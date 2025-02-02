@@ -1,6 +1,10 @@
-{% extends "loginlayout.html" %} {% block title %}Login - OptiPrice{% endblock
-%} {% block content %}
-<div class="flex flex-col items-center justify-center min-h-screen">
+{% extends "loginlayout.html" %}
+<!-- Page title -->
+{% block title %}Login - OptiPrice{% endblock %} {% block content %}
+
+<!-- Page content -->
+<div class="flex flex-col items-center justify-center">
+    <!-- Page header texts -->
     <p class="text-black dark:text-white text-4xl md:text-4xl font-bold mb-6">
         Welcome to OptiPrice!
     </p>
@@ -10,9 +14,23 @@
         Please login to continue.
     </p>
 
+    <!-- Login form -->
     {% import "loginform_macro.html" as loginform_macro %} {{
-    loginform_macro.login_form(form) }} {% if error_message %}
-    <p class="text-red-500 text-sm mb-4">{{ error_message }}</p>
-    {% endif %}
+    loginform_macro.login_form(form) }}
+
+    <!-- Error messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Check if there are messages -->
+    {% if messages %}
+    <div
+        class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+        role="alert"
+    >
+        <!-- Display each message -->
+        {% for category, message in messages %}
+        <span class="font-medium">{{ message }}</span>
+        {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
 </div>
 {% endblock %}

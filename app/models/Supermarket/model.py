@@ -26,3 +26,6 @@ class Supermarket(db.Model):
 
     # Password
     password = db.Column(db.String(300), nullable=False)
+
+    # Role
+    role = db.Column(db.String(20), nullable=False, default="admin")  # Admin or user

@@ -1,41 +1,51 @@
-from flask import redirect, url_for, render_template
+from flask import redirect, render_template, url_for, flash
+from flask_login import login_required, logout_user, current_user
 from app.blueprints.auth.forms.loginform import LoginForm
-from flask_security import login_user, logout_user, login_required
 from app.blueprints.auth import auth_bp
 from app.blueprints.auth.services import LoginService
-from app.models.Branch.model import Branch
 
 
 @auth_bp.route("/login/", methods=["GET", "POST"])
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+
+    # Bypass if user is logged in
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
+
     form = LoginForm()
-    error_message = None
 
     # On form submit
     if form.validate_on_submit():
-        # Fetch the Branch user with the entered email
-        branch = Branch.query.filter_by(email=form.email.data).first()
-
-        # Check if user exists and handle login
-        if branch is None:
-            error_message = "Invalid email"  # Email doesn't exist in the database
-        else:
-            # Check if password is correct only if email exists
-            if LoginService.verify_password(
-                email=form.email.data, password=form.password.data
-            ):
-                login_user(branch)
-                return redirect(url_for("main.index"))
-            else:
-                error_message = "Invalid password"  # Invalid password
+        # Handle login
+        return LoginService.handle_login(form)
 
     # Pass the form into the login page and display it
-    return render_template("login.html", form=form, error_message=error_message)
+    return render_template("login.html", form=form)
 
 
 @auth_bp.route("/logout")
 @login_required
 def logout():
-    logout_user()  # This will log the user out
+    logout_user()
+    return redirect(url_for("auth.login"))
+
+
+# User loader and Unauthorized handler
+from app import login_manager
+from app.models.Branch.model import Branch
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Check if user is logged-in on every page load."""
+    if user_id is not None:
+        return Branch.query.get(user_id)
+    return None
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    """Redirect unauthorized users to Login page."""
+    flash("You must be logged in to view that page.")
     return redirect(url_for("auth.login"))

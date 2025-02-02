@@ -1,8 +1,8 @@
-"""Initial migration of schema
+"""Redid initial migration since only Flask Login is being used, not Flask Seurity
 
-Revision ID: 5ca5e8da8632
+Revision ID: 0b7d3df9041e
 Revises: 
-Create Date: 2025-01-27 20:48:17.301947
+Create Date: 2025-02-02 22:14:29.190419
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5ca5e8da8632'
+revision = '0b7d3df9041e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,6 +24,7 @@ def upgrade():
     sa.Column('phone_number', sa.String(length=15), nullable=False),
     sa.Column('email', sa.String(length=100), nullable=False),
     sa.Column('password', sa.String(length=300), nullable=False),
+    sa.Column('role', sa.String(length=20), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('name'),
@@ -36,6 +37,7 @@ def upgrade():
     sa.Column('phone_number', sa.String(length=15), nullable=False),
     sa.Column('email', sa.String(length=100), nullable=False),
     sa.Column('password', sa.String(length=300), nullable=False),
+    sa.Column('role', sa.String(length=20), nullable=False),
     sa.Column('supermarket_id', sa.UUID(), nullable=False),
     sa.ForeignKeyConstraint(['supermarket_id'], ['supermarket.id'], ),
     sa.PrimaryKeyConstraint('id'),

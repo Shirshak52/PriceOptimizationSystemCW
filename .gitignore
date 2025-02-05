@@ -9,7 +9,10 @@ __pycache__/
 # Flask-specific
 instance/
 *.log
+
+# Specific to this project
 pwhash.py
+uploads/
 
 # Virtual environment
 venv/

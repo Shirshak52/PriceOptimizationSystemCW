@@ -1,0 +1,41 @@
+{% extends "baselayout.html" %}
+<!-- Page title -->
+{% block title %}Optimize Prices - OptiPrice{% endblock %} {% block content %}
+
+<!-- Page content -->
+<!-- Page header -->
+<div
+    class="flex flex-col justify-center items-center bg-fyp-secondary-100 p-8 mt-4"
+>
+    <h1
+        class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-center text-white md:text-5xl lg:text-6xl dark:text-white"
+    >
+        Segment your Customers
+    </h1>
+    <p
+        class="mb-6 text-lg font-normal text-center text-white lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400"
+    >
+        Get started by uploading your customer sales dataset below.
+    </p>
+
+    <!-- Error messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Check if there are messages -->
+    {% if messages %}
+    <div
+        class="p-4 mb-4 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+        role="alert"
+    >
+        <!-- Display each message -->
+        {% for category, message in messages %}
+        <span class="font-medium">{{ message }}</span>
+        {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <!-- File upload input field -->
+    {% if not file_is_uploaded %} {% from "file_upload_macro.html" import
+    file_upload %} {{file_upload(form=form)}} {% endif %}
+</div>
+
+{% endblock %}

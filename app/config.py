@@ -15,6 +15,7 @@ class Config:
     FLASK_ENV = environ.get("FLASK_ENV")
     FLASK_DEBUG = environ.get("FLASK_DEBUG")
     SECRET_KEY = environ.get("SECRET_KEY")
+    UPLOAD_FOLDER = environ.get("UPLOAD_FOLDER", path.join(basedir, "uploads"))
 
     # Database config values
     SQLALCHEMY_DATABASE_URI = environ.get("SQLALCHEMY_DATABASE_URI")

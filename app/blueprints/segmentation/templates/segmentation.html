@@ -12,26 +12,6 @@
     >
         Segment your Customers
     </h1>
-    <p
-        class="mb-6 text-lg font-normal text-center text-white lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400"
-    >
-        Get started by uploading your customer sales dataset below.
-    </p>
-
-    <!-- Error messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    <!-- Check if there are messages -->
-    {% if messages %}
-    <div
-        class="p-4 mb-4 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-        role="alert"
-    >
-        <!-- Display each message -->
-        {% for category, message in messages %}
-        <span class="font-medium">{{ message }}</span>
-        {% endfor %}
-    </div>
-    {% endif %} {% endwith %}
 
     <!-- File upload input field -->
     {% if not file_is_uploaded %} {% from "file_upload_macro.html" import

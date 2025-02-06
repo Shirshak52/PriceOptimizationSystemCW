@@ -15,9 +15,15 @@ class Config:
     FLASK_ENV = environ.get("FLASK_ENV")
     FLASK_DEBUG = environ.get("FLASK_DEBUG")
     SECRET_KEY = environ.get("SECRET_KEY")
-    UPLOAD_FOLDER = environ.get("UPLOAD_FOLDER", path.join(basedir, "uploads"))
+
+    # Datasetfile-related config values
+    UPLOAD_FOLDER = environ.get("UPLOAD_FOLDER")
+    # UPLOAD_FOLDER = environ.get(path.join(basedir, "uploads"))
+    MAX_CONTENT_LENGTH = int(environ.get("MAX_CONTENT_LENGTH"))
 
     # Database config values
     SQLALCHEMY_DATABASE_URI = environ.get("SQLALCHEMY_DATABASE_URI")
     SQLALCHEMY_ECHO = environ.get("SQLALCHEMY_ECHO")
     SQLALCHEMY_TRACK_MODIFICATIONS = environ.get("SQLALCHEMY_TRACK_MODIFICATIONS")
+
+    print(UPLOAD_FOLDER)

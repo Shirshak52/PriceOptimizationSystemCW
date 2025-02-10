@@ -1,4 +1,5 @@
 from flask import Flask
+from celery import Celery
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -8,6 +9,7 @@ from app.config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+celery = Celery()
 
 
 def create_app():
@@ -19,6 +21,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    celery.conf.update(app.config)
 
     # Within the app context
     with app.app_context():
@@ -37,7 +40,11 @@ def create_app():
         # Import routes
         from app.blueprints.main.routes import index
         from app.blueprints.auth.routes import login, logout
-        from app.blueprints.segmentation.routes import segmentation_dashboard
+        from app.blueprints.segmentation.routes import (
+            segmentation_dashboard,
+            upload_dataset_file,
+            change_dataset_file,
+        )
 
         # Register blueprints
         from app.blueprints.main import main_bp

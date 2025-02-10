@@ -17,12 +17,12 @@
         />
     </head>
 
-    <body class="pt-20 bg-fyp-primary-100">
+    <body class="flex flex-col items-center pt-20 bg-fyp-primary-100">
         <!-- Navbar -->
         {% from "navbar_macro.html" import navbar %} {{navbar()}}
 
         <!-- Main Content -->
-        <div class="container mx-auto p-6">
+        <div class="container pt-6 flex flex-col items-center">
             {% block content %}{% endblock %}
         </div>
 

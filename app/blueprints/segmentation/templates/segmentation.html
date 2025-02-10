@@ -1,21 +1,27 @@
 {% extends "baselayout.html" %}
 <!-- Page title -->
-{% block title %}Optimize Prices - OptiPrice{% endblock %} {% block content %}
+{% block title %}Segment Customers - OptiPrice{% endblock %} {% block content %}
 
 <!-- Page content -->
 <!-- Page header -->
-<div
-    class="flex flex-col justify-center items-center bg-fyp-secondary-100 p-8 mt-4"
+<h1
+    class="mb-6 text-4xl font-extrabold leading-none tracking-tight text-center text-black md:text-5xl lg:text-6xl dark:text-white"
 >
-    <h1
-        class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-center text-white md:text-5xl lg:text-6xl dark:text-white"
-    >
-        Segment your Customers
-    </h1>
-
+    Segment your Customers
+</h1>
+<div
+    class="w-full border-white flex flex-col justify-center items-center bg-fyp-secondary-100 p-8 m-4"
+>
     <!-- File upload input field -->
-    {% if not file_is_uploaded %} {% from "file_upload_macro.html" import
-    file_upload %} {{file_upload(form=form)}} {% endif %}
+    <!-- If file not uploaded, show upload form -->
+    {% if not file_uploaded %} {% from "file_upload_macro.html" import
+    file_upload %} {{file_upload(form=file_upload_form)}}
+
+    <!-- Else show segmentation view macro -->
+    {% else %} {% from "segmentation_view_macro.html" import segmentation_view
+    %}
+    {{segmentation_view(segmentation_parameters_form=segmentation_parameters_form)}}
+    {% endif %}
 </div>
 
 {% endblock %}

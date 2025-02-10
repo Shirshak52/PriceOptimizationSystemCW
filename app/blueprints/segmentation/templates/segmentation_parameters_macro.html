@@ -1,0 +1,114 @@
+{% macro segmentation_parameters(form) %}
+<form
+    method="post"
+    action="{{ url_for('segm.upload_dataset_file') }}"
+    class="border-white flex flex-col items-center justify-center w-full max-w-sm mx-4"
+    enctype="multipart/form-data"
+>
+    {{ form.hidden_tag() }}
+    <!-- CSRF protection -->
+
+    <div class="flex flex-col justify-center w-full max-w-sm">
+        <label
+            class="block mb-2 text-sm font-medium text-white dark:text-white"
+            for="file_input"
+        >
+            Select metric
+        </label>
+
+        <!-- Dropdown to select segmentation metric -->
+        <button
+            id="dropdownDefaultButton"
+            data-dropdown-toggle="dropdown"
+            class="text-black bg-fyp-primary-100 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            type="button"
+        >
+            Select metric
+            <svg
+                class="w-2.5 h-2.5 ms-3"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 10 6"
+            >
+                <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 1 4 4 4-4"
+                />
+            </svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div
+            id="dropdown"
+            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
+        >
+            <ul
+                class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="dropdownDefaultButton"
+            >
+                <li>
+                    <a
+                        href="#"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                        Earnings
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                        Sign out
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Form error messages -->
+
+        <!-- Other error messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- Check if there are messages -->
+        {% if messages %}
+        <div
+            class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            role="alert"
+        >
+            <!-- Display each message -->
+            {% for category, message in messages %}
+            <span class="font-medium">{{ message }}</span>
+            {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+    </div>
+
+    <!-- Submit button -->
+    <div class="mt-4">
+        {{ form.submit(class="text-white bg-fyp-tertiary-100
+        hover:bg-fyp-tertiary-200 focus:ring-4 focus:outline-none
+        focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm px-5 py-2.5
+        text-center") }}
+    </div>
+</form>
+{% endmacro %}

@@ -15,6 +15,26 @@ class Segmentation(db.Model):
         default=uuid.uuid4,
     )
 
+    # Metric chosen for clustering
+    chosen_metric = db.Column(
+        db.Enum(
+            "total_visits",
+            "total_sales",
+            "total_qty",
+            "avg_weekly_visits",
+            "avg_weekly_sales",
+            "avg_weekly_qty",
+            "avg_monthly_visits",
+            "avg_monthly_sales",
+            "avg_monthly_qty",
+            "avg_quarterly_visits",
+            "avg_quarterly_sales",
+            "avg_quarterly_qty",
+            name="clustering_metrics",
+        ),
+        nullable=False,
+    )
+
     # Number of clusters
     num_of_clusters = db.Column(db.Integer, nullable=False)
 

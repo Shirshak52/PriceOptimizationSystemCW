@@ -7,7 +7,7 @@
 </p>
 <form
     method="post"
-    action="{{ url_for('segm.segmentation_dashboard') }}"
+    action="{{ url_for('segm.upload_dataset_file') }}"
     class="flex flex-col items-center justify-center w-full"
     enctype="multipart/form-data"
 >
@@ -19,7 +19,7 @@
             class="block mb-2 text-sm font-medium text-white dark:text-white"
             for="file_input"
         >
-            Upload file
+            {{form.file.label}}
         </label>
 
         <!-- File upload field -->

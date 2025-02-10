@@ -25,30 +25,8 @@ class Cluster(db.Model):
     # PRIMARY KEY END=================================================
 
     # CLUSTER PROFILE DATA START=================================================
-    # Total sales
-    total_sales = db.Column(db.Float, nullable=False)
-
-    # Total quantity
-    total_qty = db.Column(db.Integer, nullable=False)
-
-    # Total visits
-    total_visits = db.Column(db.Integer, nullable=False)
-
-    # Top product ID
-    top_product_id = db.Column(db.String(50), nullable=False)
-
-    # Timeframe for averages
-    timeframe = db.Column(
-        db.Enum("Weekly", "Monthly", "Quarterly", name="cluster_timeframes")
-    )
-    # Average sales per timeframe
-    avg_sales_per_timeframe = db.Column(db.Float, nullable=False)
-
-    # Average quantity per timeframe
-    avg_qty_per_timeframe = db.Column(db.Float, nullable=False)
-
-    # Average visits per timeframe
-    avg_visits_per_timeframe = db.Column(db.Float, nullable=False)
+    # Average value of the chosen clustering metric
+    metric_avg = db.Column(db.Float, nullable=False)
     # CLUSTER PROFILE DATA END=================================================
 
     # (Optional) Relationship with Segmentation

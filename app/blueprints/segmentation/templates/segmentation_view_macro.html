@@ -1,0 +1,28 @@
+{% macro segmentation_view(segmentation_parameters_form) %}
+<div class="w-full border-white flex flex-col items-center justify-center">
+    <div class="border-white w-full flex justify-between items-center">
+        <!-- Segmentation parameters form -->
+        {% from "segmentation_parameters_macro.html" import
+        segmentation_parameters %}
+        {{segmentation_parameters(form=segmentation_parameters_form)}}
+
+        <div class="mt-4">
+            <form
+                method="post"
+                action="{{ url_for('segm.change_dataset_file') }}"
+            >
+                <button
+                    type="submit"
+                    class="text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-4 focus:outline-none focus:ring-white font-medium rounded-md text-sm px-5 py-2.5 text-center"
+                >
+                    Change file
+                </button>
+            </form>
+        </div>
+
+        <!-- Segmentation output chart -->
+        {% from "segmentation_chart_macro.html" import segmentation_chart %}
+        {{segmentation_chart()}}
+    </div>
+</div>
+{% endmacro %}

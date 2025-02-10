@@ -16,7 +16,7 @@ class DatasetFileService:
         "Product ID",
         "Customer ID",
         "Order Date",
-        "Price",
+        # "Price",
         "Quantity",
         "Sales",
     ]
@@ -25,7 +25,7 @@ class DatasetFileService:
     idcols = ["Product ID", "Customer ID"]
 
     # Numerical columns of the dataset
-    numcols = ["Price", "Quantity", "Sales"]
+    numcols = ["Quantity", "Sales"]
 
     # Date column of the dataset
     datecol = "Order Date"
@@ -83,8 +83,26 @@ class DatasetFileService:
 
     @staticmethod
     def convert_to_csv(file):
-        """Ensures correct datatypes in the dataset and converts it into a csv file."""
+        """Converts the dataset in the file into a csv string."""
+        # Convert the dataset into a dataframe and clean it
         df = DatasetFileService.convert_to_df(file)
+        df = DatasetFileService.clean_dataset(df)
+
+        # Save the converted dataframe into a BytesIO object
+        output = BytesIO()
+        df.to_csv(output, index=False)  # Saving CSV to BytesIO buffer
+        output.seek(0)  # Rewind to the start of the file
+
+        return output  # Return the in-memory CSV file
+
+    @staticmethod
+    def clean_dataset(df):
+        """Cleans the dataset by dropping missing values and duplicates, and ensuring
+        correct datatype of ID and date columns."""
+
+        # Drop missing values and duplicates
+        df.dropna(inplace=True)
+        df.drop_duplicates(inplace=True)
 
         #  Convert date column to datetime
         df[DatasetFileService.datecol] = pd.to_datetime(df[DatasetFileService.datecol])
@@ -93,12 +111,7 @@ class DatasetFileService:
         for col in DatasetFileService.idcols:
             df[col] = df[col].astype(str)
 
-        # Save the converted dataframe into a BytesIO object
-        output = BytesIO()
-        df.to_csv(output, index=False)  # Saving CSV to BytesIO buffer
-        output.seek(0)  # Rewind to the start of the file
-
-        return output  # Return the in-memory CSV file
+        return df
 
     @staticmethod
     def convert_to_df(file):
@@ -167,7 +180,9 @@ class DatasetFileService:
     def validate_datecol(df):
         """Validates the datatype of date column in the dataset."""
         # Convert the date column to datetime datatype, convert to NaN if not possible
-        temp_datecol = pd.to_datetime(df[DatasetFileService.datecol], errors="coerce")
+        df[DatasetFileService.datecol] = pd.to_datetime(
+            df[DatasetFileService.datecol], errors="coerce"
+        )
 
         # Return True if all values are valid
-        return not temp_datecol.isna().any()
+        return not df[DatasetFileService.datecol].isna().any()

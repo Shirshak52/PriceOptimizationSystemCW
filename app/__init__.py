@@ -44,6 +44,7 @@ def create_app():
             segmentation_dashboard,
             upload_dataset_file,
             change_dataset_file,
+            cluster_customers,
         )
 
         # Register blueprints

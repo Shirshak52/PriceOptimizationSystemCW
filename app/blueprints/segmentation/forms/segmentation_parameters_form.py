@@ -7,27 +7,38 @@ class SegmentationParametersForm(FlaskForm):
 
     # Metric based on which to perform segmentation
     metric = SelectField(
-        "Select a Metric",
+        "On what basis do you want to group your customers?",
         choices=[
-            ("option1", "Option 1"),
-            ("option2", "Option 2"),
-            ("option3", "Option 3"),
+            ("total_visits", "Total Visits"),
+            ("total_sales", "Total Sales"),
+            ("total_qty", "Total Quantity"),
+            ("avg_weekly_visits", "Average Weekly Visits"),
+            ("avg_weekly_sales", "Average Weekly Sales"),
+            ("avg_weekly_qty", "Average Weekly Quantity"),
+            ("avg_monthly_visits", "Average Monthly Visits"),
+            ("avg_monthly_sales", "Average Monthly Sales"),
+            ("avg_monthly_qty", "Average Monthly Quantity"),
+            ("avg_quarterly_visits", "Average Quarterly Visits"),
+            ("avg_quarterly_sales", "Average Quarterly Sales"),
+            ("avg_quarterly_qty", "Average Quarterly Quantity"),
         ],
         validators=[InputRequired()],
     )
 
     # Options for selecting number of groups
     number_choice = RadioField(
-        "Select Option",
-        choices=[("select_number", "Select a Number"), ("auto", "Auto")],
+        "How many groups do you want to form?",
+        choices=[("custom", "Custom"), ("auto", "Auto")],
         default="auto",
         validators=[InputRequired()],
     )
 
     # Number selection (only when selecting custom number of groups)
     number = IntegerField(
-        "Pick a Number",
-        validators=[NumberRange(min=2, max=10)],
+        "Select a Number",
+        validators=[
+            NumberRange(min=2, max=10),
+        ],
         render_kw={"disabled": True},  # Initially disabled
     )
 

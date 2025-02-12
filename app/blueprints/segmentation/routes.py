@@ -57,3 +57,15 @@ def upload_dataset_file():
 def change_dataset_file():
     session["file_uploaded"] = False
     return redirect(url_for("segm.segmentation_dashboard"))
+
+
+@segmentation_bp.route("/cluster_customers", methods=["POST"])
+def cluster_customers():
+    form = SegmentationParametersForm()
+
+    if form.validate_on_submit():
+        print("segm form passedd")
+    else:
+        print("segm form not passedd", form.errors)
+
+    return redirect(url_for("segm.segmentation_dashboard"))

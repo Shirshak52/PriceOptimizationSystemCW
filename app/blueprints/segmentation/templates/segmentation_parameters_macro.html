@@ -1,91 +1,73 @@
 {% macro segmentation_parameters(form) %}
 <form
     method="post"
-    action="{{ url_for('segm.upload_dataset_file') }}"
-    class="border-white flex flex-col items-center justify-center w-full max-w-sm mx-4"
+    action="{{ url_for('segm.cluster_customers') }}"
+    class="border-white flex flex-col items-center justify-center max-w-sm mx-4"
     enctype="multipart/form-data"
 >
     {{ form.hidden_tag() }}
     <!-- CSRF protection -->
 
     <div class="flex flex-col justify-center w-full max-w-sm">
-        <label
-            class="block mb-2 text-sm font-medium text-white dark:text-white"
-            for="file_input"
-        >
-            Select metric
-        </label>
-
         <!-- Dropdown to select segmentation metric -->
-        <button
-            id="dropdownDefaultButton"
-            data-dropdown-toggle="dropdown"
-            class="text-black bg-fyp-primary-100 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            type="button"
-        >
-            Select metric
-            <svg
-                class="w-2.5 h-2.5 ms-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
+        <fieldset class="border-white flex flex-col">
+            <label
+                class="text-sm font-medium text-white dark:text-white"
+                for="metric"
             >
-                <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 1 4 4 4-4"
-                />
-            </svg>
-        </button>
+                {{ form.metric.label }}
+            </label>
+            {{ form.metric( id="metric", class="text-black bg-fyp-primary-100
+            hover:bg-gray-300 focus:ring-4 focus:outline-none
+            focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-2
+            text-center dark:bg-blue-600 dark:hover:bg-blue-700
+            dark:focus:ring-blue-800", required=True ) }}
+        </fieldset>
 
-        <!-- Dropdown menu -->
-        <div
-            id="dropdown"
-            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
-        >
+        <!-- Number of clusters to form -->
+        <fieldset class="border-white mt-6 flex flex-col">
+            <!-- Radio button for number of clusters (auto/custom) -->
+            <label class="text-sm font-medium text-white dark:text-white">
+                {{ form.number_choice.label }}
+            </label>
+            <div class="flex items-center mt-2">
+                {% for subfield in form.number_choice %}
+                <div class="flex items-center">
+                    {{ subfield( id="number-choice-" ~ loop.index, class="w-4
+                    h-4 border-gray-300 focus:ring-2 focus:ring-blue-300
+                    dark:focus:ring-blue-600 dark:focus:bg-blue-600
+                    dark:bg-gray-700 dark:border-gray-600",
+                    onclick="toggleNumberInput()" ) }}
+                    <label
+                        for="number-choice-{{ loop.index }}"
+                        class="ms-2 me-4 text-sm font-medium text-white dark:text-gray-300"
+                    >
+                        {{ subfield.label.text }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Number input for entering number of clusters -->
+            {{ form.number( id="number-input", class="bg-fyp-primary-100 border
+            border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
+            focus:border-blue-500 p-2.5 mt-3 dark:bg-gray-700
+            dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+            dark:focus:ring-blue-500 dark:focus:border-blue-500",
+            placeholder="Select a number", required=True ) }}
+
+            <!--  Validator error messages -->
+            {% if form.number.errors %}
             <ul
-                class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                aria-labelledby="dropdownDefaultButton"
+                class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert"
             >
-                <li>
-                    <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Settings
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Earnings
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        Sign out
-                    </a>
-                </li>
+                {% for error in form.email.errors %}
+                <li class="font-medium">{{ error }}</li>
+                {% endfor %}
             </ul>
-        </div>
-
-        <!-- Form error messages -->
+            {% endif %}
+        </fieldset>
 
         <!-- Other error messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -104,11 +86,40 @@
     </div>
 
     <!-- Submit button -->
-    <div class="mt-4">
-        {{ form.submit(class="text-white bg-fyp-tertiary-100
-        hover:bg-fyp-tertiary-200 focus:ring-4 focus:outline-none
-        focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm px-5 py-2.5
-        text-center") }}
-    </div>
+    {{ form.submit(class="text-white bg-fyp-tertiary-100
+    hover:bg-fyp-tertiary-200 focus:ring-4 focus:outline-none
+    focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm mt-8 px-5 py-2.5
+    text-center") }}
 </form>
+
+<!-- JS to enable/disable number input -->
+<script>
+    function toggleNumberInput() {
+        var numberInput = document.getElementById("number-input");
+        var autoRadio = document.querySelector(
+            'input[name="number_choice"][value="auto"]'
+        );
+        var customRadio = document.querySelector(
+            'input[name="number_choice"][value="custom"]'
+        );
+
+        // Enable number input if 'Custom' radio is selected, else disable it
+        if (autoRadio.checked) {
+            numberInput.disabled = true;
+        } else if (customRadio.checked) {
+            numberInput.disabled = false;
+        }
+    }
+
+    // Initial state setup based on the selected radio button when the page loads
+    window.onload = function () {
+        var selectedRadio = document.querySelector(
+            'input[name="number_choice"]:checked'
+        );
+        if (selectedRadio) {
+            toggleNumberInput(); // Call the function on page load
+        }
+    };
+</script>
+
 {% endmacro %}

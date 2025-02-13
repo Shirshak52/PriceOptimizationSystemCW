@@ -2,13 +2,13 @@
 <form
     method="post"
     action="{{ url_for('segm.cluster_customers') }}"
-    class="border-white flex flex-col items-center justify-center max-w-sm mx-4"
+    class="border-b border-white rounded-xl flex flex-col items-center justify-center mx-4 py-5 px-8"
     enctype="multipart/form-data"
 >
     {{ form.hidden_tag() }}
     <!-- CSRF protection -->
 
-    <div class="flex flex-col justify-center w-full max-w-sm">
+    <div class="border-white flex flex-col justify-center w-full max-w-sm">
         <!-- Dropdown to select segmentation metric -->
         <fieldset class="border-white flex flex-col">
             <label
@@ -30,16 +30,14 @@
             <label class="text-sm font-medium text-white dark:text-white">
                 {{ form.number_choice.label }}
             </label>
-            <div class="flex items-center mt-2">
+            <div class="grid grid-cols-5 gap-1 mt-2">
                 {% for subfield in form.number_choice %}
                 <div class="flex items-center">
-                    {{ subfield( id="number-choice-" ~ loop.index, class="w-4
-                    h-4 border-gray-300 focus:ring-2 focus:ring-blue-300
-                    dark:focus:ring-blue-600 dark:focus:bg-blue-600
-                    dark:bg-gray-700 dark:border-gray-600",
-                    onclick="toggleNumberInput()" ) }}
+                    {{ subfield( class="w-4 h-4 border-gray-300 focus:ring-2
+                    focus:ring-blue-300 dark:focus:ring-blue-600
+                    dark:focus:bg-blue-600 dark:bg-gray-700
+                    dark:border-gray-600", ) }}
                     <label
-                        for="number-choice-{{ loop.index }}"
                         class="ms-2 me-4 text-sm font-medium text-white dark:text-gray-300"
                     >
                         {{ subfield.label.text }}
@@ -47,26 +45,6 @@
                 </div>
                 {% endfor %}
             </div>
-
-            <!-- Number input for entering number of clusters -->
-            {{ form.number( id="number-input", class="bg-fyp-primary-100 border
-            border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
-            focus:border-blue-500 p-2.5 mt-3 dark:bg-gray-700
-            dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-            dark:focus:ring-blue-500 dark:focus:border-blue-500",
-            placeholder="Select a number", required=True ) }}
-
-            <!--  Validator error messages -->
-            {% if form.number.errors %}
-            <ul
-                class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                role="alert"
-            >
-                {% for error in form.email.errors %}
-                <li class="font-medium">{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
         </fieldset>
 
         <!-- Other error messages -->
@@ -91,35 +69,5 @@
     focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm mt-8 px-5 py-2.5
     text-center") }}
 </form>
-
-<!-- JS to enable/disable number input -->
-<script>
-    function toggleNumberInput() {
-        var numberInput = document.getElementById("number-input");
-        var autoRadio = document.querySelector(
-            'input[name="number_choice"][value="auto"]'
-        );
-        var customRadio = document.querySelector(
-            'input[name="number_choice"][value="custom"]'
-        );
-
-        // Enable number input if 'Custom' radio is selected, else disable it
-        if (autoRadio.checked) {
-            numberInput.disabled = true;
-        } else if (customRadio.checked) {
-            numberInput.disabled = false;
-        }
-    }
-
-    // Initial state setup based on the selected radio button when the page loads
-    window.onload = function () {
-        var selectedRadio = document.querySelector(
-            'input[name="number_choice"]:checked'
-        );
-        if (selectedRadio) {
-            toggleNumberInput(); // Call the function on page load
-        }
-    };
-</script>
 
 {% endmacro %}

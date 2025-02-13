@@ -28,18 +28,20 @@ class SegmentationParametersForm(FlaskForm):
     # Options for selecting number of groups
     number_choice = RadioField(
         "How many groups do you want to form?",
-        choices=[("custom", "Custom"), ("auto", "Auto")],
+        choices=[
+            ("auto", "Auto"),
+            (2, "2"),
+            (3, "3"),
+            (4, "4"),
+            (5, "5"),
+            (6, "6"),
+            (7, "7"),
+            (8, "8"),
+            (9, "9"),
+            (10, "10"),
+        ],
         default="auto",
         validators=[InputRequired()],
-    )
-
-    # Number selection (only when selecting custom number of groups)
-    number = IntegerField(
-        "Select a Number",
-        validators=[
-            NumberRange(min=2, max=10),
-        ],
-        render_kw={"disabled": True},  # Initially disabled
     )
 
     # Submit button

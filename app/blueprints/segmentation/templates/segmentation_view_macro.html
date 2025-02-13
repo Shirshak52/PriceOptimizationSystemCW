@@ -1,11 +1,12 @@
 {% macro segmentation_view(segmentation_parameters_form) %}
-<div class="w-full border-white flex flex-col items-center justify-center">
-    <div class="border-white w-full flex justify-between items-center">
+<div class="w-full border-white flex items-center justify-between">
+    <div class="w-full border-white flex flex-col justify-center items-center">
         <!-- Segmentation parameters form -->
         {% from "segmentation_parameters_macro.html" import
         segmentation_parameters %}
         {{segmentation_parameters(form=segmentation_parameters_form)}}
 
+        <!-- Change file button -->
         <div class="mt-4">
             <form
                 method="post"
@@ -19,8 +20,9 @@
                 </button>
             </form>
         </div>
-
-        <!-- Segmentation output chart -->
+    </div>
+    <!-- Segmentation output chart -->
+    <div class="border-white w-full flex justify-center items-center">
         {% from "segmentation_chart_macro.html" import segmentation_chart %}
         {{segmentation_chart()}}
     </div>

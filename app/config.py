@@ -17,8 +17,9 @@ class Config:
     SECRET_KEY = environ.get("SECRET_KEY")
 
     # Datasetfile-related config values
-    UPLOAD_FOLDER = environ.get("UPLOAD_FOLDER")
-    # UPLOAD_FOLDER = environ.get(path.join(basedir, "uploads"))
+    UPLOAD_FOLDER_OPTIMIZATION = environ.get("UPLOAD_FOLDER_OPTIMIZATION")
+    UPLOAD_FOLDER_PREDICTION = environ.get("UPLOAD_FOLDER_PREDICTION")
+    UPLOAD_FOLDER_SEGMENTATION = environ.get("UPLOAD_FOLDER_SEGMENTATION")
     MAX_CONTENT_LENGTH = int(environ.get("MAX_CONTENT_LENGTH"))
 
     # Database config values

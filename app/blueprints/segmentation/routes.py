@@ -36,7 +36,9 @@ def upload_dataset_file():
             file = form.file.data  # File data
 
             if DatasetFileService.validate_datasetfile(file):
-                session["file_uploaded"] = DatasetFileService.save_datasetfile(file)
+                session["file_uploaded"] = DatasetFileService.save_datasetfile(
+                    file, "segmentation"
+                )
                 # return redirect(url_for("main.index"))
             else:
                 flash(

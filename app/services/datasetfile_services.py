@@ -31,19 +31,25 @@ class DatasetFileService:
     datecol = "Order Date"
 
     @staticmethod
-    def save_datasetfile(file):
+    def save_datasetfile(file, ml_process):
         """Saves the user-uploaded dataset file, as well as its metadata in the database."""
         try:
             # Generate a unique filename
             unique_filename = DatasetFileService.generate_unique_filename(file)
 
-            # Ensure the upload directory exists
-            os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
+            # Set the correct folder
+            if ml_process == "optimization":
+                folder = current_app.config["UPLOAD_FOLDER_OPTIMIZATION"]
+                df_engineered = DatasetFileService.engineer_features(file, ml_process)
+            elif ml_process == "prediction":
+                folder = current_app.config["UPLOAD_FOLDER_PREDICTION"]
+            elif ml_process == "segmentation":
+                folder = current_app.config["UPLOAD_FOLDER_SEGMENTATION"]
+            else:
+                print("Invalid ML process, {ml_process}")
 
             # Create the full file path
-            file_path = os.path.join(
-                current_app.config["UPLOAD_FOLDER"], os.path.basename(unique_filename)
-            )
+            file_path = os.path.join(folder, os.path.basename(unique_filename))
 
             # Convert the file into a CSV string
             converted_file = DatasetFileService.convert_to_csv(file)
@@ -129,6 +135,16 @@ class DatasetFileService:
             df = pd.read_csv(file)
 
         return df
+
+    @staticmethod
+    def engineer_features(df, ml_process):
+        if ml_process == "segmentation":
+            from app.services.segmentation_services import SegmentationService
+
+            df_engineered = SegmentationService.engineer_features(df)
+            return df_engineered
+        else:
+            print("loll, no such ml process as {ml_process}")
 
     @staticmethod
     def validate_datasetfile(file):

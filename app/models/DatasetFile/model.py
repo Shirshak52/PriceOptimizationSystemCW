@@ -17,7 +17,7 @@ class DatasetFile(db.Model):
     )
 
     # File path
-    file_path = db.Column(db.String(50), nullable=False, unique=True)
+    file_path = db.Column(db.String(150), nullable=False, unique=True)
 
     # Upload datetime
     upload_datetime = db.Column(db.DateTime, nullable=False, default=datetime.now)

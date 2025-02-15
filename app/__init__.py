@@ -38,14 +38,9 @@ def create_app():
         # Setup admin views
 
         # Import routes
-        from app.blueprints.main.routes import index
-        from app.blueprints.auth.routes import login, logout
-        from app.blueprints.segmentation.routes import (
-            segmentation_dashboard,
-            upload_dataset_file,
-            change_dataset_file,
-            cluster_customers,
-        )
+        from app.blueprints.main import routes
+        from app.blueprints.auth import routes
+        from app.blueprints.segmentation import routes
 
         # Register blueprints
         from app.blueprints.main import main_bp

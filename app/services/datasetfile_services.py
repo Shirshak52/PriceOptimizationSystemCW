@@ -8,6 +8,7 @@ import numpy as np
 from flask import current_app
 from app import db
 from app.models.DatasetFile.model import DatasetFile
+from sklearn.preprocessing import MinMaxScaler
 
 
 class DatasetFileService:
@@ -16,7 +17,6 @@ class DatasetFileService:
         "Product ID",
         "Customer ID",
         "Order Date",
-        # "Price",
         "Quantity",
         "Sales",
     ]
@@ -34,25 +34,24 @@ class DatasetFileService:
     def save_datasetfile(file, ml_process):
         """Saves the user-uploaded dataset file, as well as its metadata in the database."""
         try:
-            # Generate a unique filename
-            unique_filename = DatasetFileService.generate_unique_filename(file)
+            # Convert the file into a DataFrame
+            df = DatasetFileService.convert_to_df(file)
+            df = df[DatasetFileService.required_cols]
 
             # Set the correct folder
-            if ml_process == "optimization":
-                folder = current_app.config["UPLOAD_FOLDER_OPTIMIZATION"]
-                df_engineered = DatasetFileService.engineer_features(file, ml_process)
-            elif ml_process == "prediction":
-                folder = current_app.config["UPLOAD_FOLDER_PREDICTION"]
-            elif ml_process == "segmentation":
-                folder = current_app.config["UPLOAD_FOLDER_SEGMENTATION"]
-            else:
-                print("Invalid ML process, {ml_process}")
+            folder = DatasetFileService.set_correct_folder(ml_process)
+
+            # Preprocess the dataset
+            df_preprocessed = DatasetFileService.preprocess_dataset(df, ml_process)
+
+            # Generate a unique filename
+            unique_filename = DatasetFileService.generate_unique_filename(file)
 
             # Create the full file path
             file_path = os.path.join(folder, os.path.basename(unique_filename))
 
             # Convert the file into a CSV string
-            converted_file = DatasetFileService.convert_to_csv(file)
+            converted_file = DatasetFileService.convert_to_csv(df_preprocessed)
 
             # Save the CSV content to the file
             with open(file_path, "wb") as f:
@@ -77,29 +76,14 @@ class DatasetFileService:
             return False  # Return False
 
     @staticmethod
-    def generate_unique_filename(file):
-        """Generates a unique filename."""
+    def preprocess_dataset(df, ml_process):
+        """Cleans the dataset, engineers features, and scales the dataset."""
+        df_cleaned = DatasetFileService.clean_dataset(df)
+        df_engineered = DatasetFileService.engineer_features(df_cleaned, ml_process)
+        df_scaled = DatasetFileService.scale_dataset(df_engineered)
 
-        # Generate a UUID
-        unique_id = str(uuid.uuid4())[:8]  # Shorten UUID to 8 chars
-
-        # Combine the UUID and the file extension
-        unique_filename = f"{unique_id}_{file.filename}.csv"
-        return unique_filename
-
-    @staticmethod
-    def convert_to_csv(file):
-        """Converts the dataset in the file into a csv string."""
-        # Convert the dataset into a dataframe and clean it
-        df = DatasetFileService.convert_to_df(file)
-        df = DatasetFileService.clean_dataset(df)
-
-        # Save the converted dataframe into a BytesIO object
-        output = BytesIO()
-        df.to_csv(output, index=False)  # Saving CSV to BytesIO buffer
-        output.seek(0)  # Rewind to the start of the file
-
-        return output  # Return the in-memory CSV file
+        df_preprocessed = df_scaled.copy()
+        return df_preprocessed
 
     @staticmethod
     def clean_dataset(df):
@@ -120,6 +104,63 @@ class DatasetFileService:
         return df
 
     @staticmethod
+    def engineer_features(df, ml_process):
+        """Engineers features according to the ML process."""
+        if ml_process == "segmentation":
+            from app.services.segmentation_services import SegmentationService
+
+            df_engineered = SegmentationService.engineer_features(df)
+            return df_engineered
+        else:
+            raise ValueError(f"Unsupported ML process {ml_process}")
+
+    @staticmethod
+    def scale_dataset(df):
+        """Scales the dataset."""
+        scaler = MinMaxScaler()
+        df_scaled = df.copy()
+        numcols = df.select_dtypes(include=[np.number]).columns.tolist()
+        df_scaled[numcols] = scaler.fit_transform(df_scaled[numcols])
+
+        return df_scaled
+
+    @staticmethod
+    def set_correct_folder(ml_process):
+        """Returns the correct folder based on the ML process."""
+        folder_map = {
+            "optimization": current_app.config["UPLOAD_FOLDER_OPTIMIZATION"],
+            "prediction": current_app.config["UPLOAD_FOLDER_PREDICTION"],
+            "segmentation": current_app.config["UPLOAD_FOLDER_SEGMENTATION"],
+        }
+
+        if ml_process not in folder_map:
+            raise ValueError(f"Invalid ML process, {ml_process}")
+
+        return folder_map[ml_process]
+
+    @staticmethod
+    def generate_unique_filename(file):
+        """Generates a unique filename."""
+
+        # Generate a UUID
+        unique_id = str(uuid.uuid4())[:8]  # Shorten UUID to 8 chars
+
+        # Combine the UUID and the file extension
+        unique_filename = f"{unique_id}_{file.filename}.csv"
+        return unique_filename
+
+    @staticmethod
+    def convert_to_csv(df_engineered):
+        """Converts the feature-engineered dataset into a csv string."""
+
+        # Save the converted dataframe into a BytesIO object
+        output = BytesIO()
+        df_engineered.to_csv(output, index=False)  # Saving CSV to BytesIO buffer
+        output.seek(0)  # Rewind to the start of the file
+
+        return output  # Return the in-memory CSV file
+
+    @staticmethod
     def convert_to_df(file):
         """Converts files into a Pandas Dataframe."""
         # Excel
@@ -135,16 +176,6 @@ class DatasetFileService:
             df = pd.read_csv(file)
 
         return df
-
-    @staticmethod
-    def engineer_features(df, ml_process):
-        if ml_process == "segmentation":
-            from app.services.segmentation_services import SegmentationService
-
-            df_engineered = SegmentationService.engineer_features(df)
-            return df_engineered
-        else:
-            print("loll, no such ml process as {ml_process}")
 
     @staticmethod
     def validate_datasetfile(file):

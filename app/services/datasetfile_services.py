@@ -68,12 +68,12 @@ class DatasetFileService:
             db.session.add(metadata)
             db.session.commit()
 
-            return True  # Return True if all operations are successful
+            return file_path  # Return the file path if all operations are successful
 
         except Exception as e:
             print(f"Error while saving dataset file: {e}")
             db.session.rollback()  # In case of failure, rollback the session
-            return False  # Return False
+            return None  # Return None
 
     @staticmethod
     def preprocess_dataset(df, ml_process):

@@ -1,4 +1,40 @@
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+
 class SegmentationService:
+    @staticmethod
+    def segment_customers(df, num_of_clusters, chosen_metric):
+        """Performs KMeans Clustering and returns a DataFrame with the chosen metric and cluster labels."""
+        df_clustering = df[[chosen_metric]].copy()
+
+        n_clusters = (
+            SegmentationService.get_optimal_num_of_clusters(df_clustering)
+            if num_of_clusters == "auto"
+            else int(num_of_clusters)
+        )
+
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        df_clustering["Cluster"] = kmeans.fit_predict(df_clustering)
+
+        return df_clustering
+
+    @staticmethod
+    def get_optimal_num_of_clusters(df_clustering):
+        """Returns the number of clusters with the highest silhouette score."""
+        cluster_range = range(2, 11)
+        silhouette_scores = []
+
+        for k in cluster_range:
+            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+            kmeans.fit(df_clustering)
+            labels = kmeans.labels_
+            silhouette_avg = silhouette_score(df_clustering, labels)
+            silhouette_scores.append(silhouette_avg)
+
+        return cluster_range[np.argmax(silhouette_scores)]
+
     @staticmethod
     def engineer_features(df):
         """Engineers totals and averages for segmentation."""

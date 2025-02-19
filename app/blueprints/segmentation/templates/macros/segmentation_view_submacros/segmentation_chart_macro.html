@@ -1,0 +1,69 @@
+{% macro segmentation_chart() %}
+<div
+    class="max-w-lg p-6 mx-auto bg-fyp-primary-100 border border-gray-200 rounded-lg shadow-sm"
+>
+    <canvas id="clusterChart"></canvas>
+</div>
+
+<script type="text/javascript">
+    // Get the chart context
+    var context = document.getElementById("clusterChart").getContext("2d");
+
+    // Create the chart using Chart.js
+    var clusterChart = new Chart(context, {
+        type: "doughnut", // Type of chart
+        data: {
+            labels: [], // Will be populated with cluster labels
+            datasets: [
+                {
+                    label: "Customer Count",
+                    data: [], // Will be populated with cluster count values
+                    backgroundColor: [
+                        "#EF582E",
+                        "#00A878",
+                        "#00A1E4",
+                        "#F4D35E",
+                        "#BC63F8",
+                    ],
+                    borderColor: "#D5D6D8", // Border color of each section of the chart
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top",
+                },
+                title: {
+                    display: true,
+                    text: "Customer Composition",
+                    font: {
+                        size: 22,
+                    },
+                },
+            },
+        },
+    });
+
+    // Function to fetch cluster counts from the server
+    function fetchClusterCounts() {
+        fetch("get_cluster_counts") // Fetch data from the endpoint
+            .then((response) => response.json()) // Then get the cluster counts JSON object from the response
+            .then((data) => {
+                // If cluster counts is not empty, update the chart UI
+                if (data && Object.keys(data).length > 0) {
+                    clusterChart.data.labels = Object.keys(data); // Set the data labels
+                    clusterChart.data.datasets[0].data = Object.values(data); // Set the data values
+                    clusterChart.update(); // Update the UI
+                }
+            })
+            .catch((error) =>
+                console.error("Error fetching cluster counts:", error)
+            );
+    }
+
+    // Call the get_cluster_counts endpoint every 3 seconds
+    setInterval(fetchClusterCounts, 3000);
+</script>
+{% endmacro %}

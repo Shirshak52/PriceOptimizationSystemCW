@@ -6,19 +6,25 @@ from sklearn.metrics import silhouette_score
 class SegmentationService:
     @staticmethod
     def segment_customers(df, num_of_clusters, chosen_metric):
-        """Performs KMeans Clustering and returns a DataFrame with the chosen metric and cluster labels."""
+        """Performs KMeans Clustering and returns an output chart that reflects the clustered data."""
         df_clustering = df[[chosen_metric]].copy()
 
+        # Number of clusters
         n_clusters = (
             SegmentationService.get_optimal_num_of_clusters(df_clustering)
             if num_of_clusters == "auto"
             else int(num_of_clusters)
         )
 
+        # Initialize KMeans model
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+
+        # Cluster the data and return labels
         df_clustering["Cluster"] = kmeans.fit_predict(df_clustering)
 
-        return df_clustering
+        # return the cluster counts in JSON format
+        cluster_counts = df_clustering["Cluster"].value_counts()
+        return cluster_counts
 
     @staticmethod
     def get_optimal_num_of_clusters(df_clustering):

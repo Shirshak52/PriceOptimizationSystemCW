@@ -18,8 +18,12 @@
     </head>
 
     <body class="flex flex-col items-center pt-20 bg-fyp-primary-100">
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
+
         <!-- Navbar -->
-        {% from "navbar_macro.html" import navbar %} {{navbar()}}
+        {% from "macros/navbar_macro.html" import navbar %} {{navbar()}}
 
         <!-- Main Content -->
         <div class="container pt-6 flex flex-col items-center">
@@ -27,7 +31,7 @@
         </div>
 
         <!-- Footer -->
-        {% from "footer_macro.html" import footer %} {{footer()}}
+        {% from "macros/footer_macro.html" import footer %} {{footer()}}
 
         <!-- Flowbite JS -->
         <script src="{{ url_for('static', filename='dist/js/flowbite.min.js') }}"></script>

@@ -5,14 +5,23 @@ from app.blueprints.auth import auth_bp
 from app.blueprints.auth.services import LoginService
 
 
-@auth_bp.route("/login/", methods=["GET", "POST"])
-@auth_bp.route("/login", methods=["GET", "POST"])
-def login():
-
+@auth_bp.route("/login/", methods=["GET"])
+@auth_bp.route("/login", methods=["GET"])
+def show_login():
+    """Displays the login page."""
     # Bypass if user is logged in
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
 
+    form = LoginForm()
+
+    # Pass the form into the login page and display it
+    return render_template("login.html", form=form)
+
+
+@auth_bp.route("/handle_login", methods=["POST"])
+def handle_login():
+    """Validates the login credentials."""
     form = LoginForm()
 
     # On form submit
@@ -20,13 +29,11 @@ def login():
         # Handle login
         return LoginService.handle_login(form)
 
-    # Pass the form into the login page and display it
-    return render_template("login.html", form=form)
-
 
 @auth_bp.route("/logout")
 @login_required
 def logout():
+    """Logs the user out."""
     logout_user()
     return redirect(url_for("auth.login"))
 
@@ -38,7 +45,7 @@ from app.models.Branch.model import Branch
 
 @login_manager.user_loader
 def load_user(user_id):
-    """Check if user is logged-in on every page load."""
+    """Checks if user is logged-in on every page load."""
     if user_id is not None:
         return Branch.query.get(user_id)
     return None
@@ -46,6 +53,6 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    """Redirect unauthorized users to Login page."""
+    """Redirects unauthorized users to Login page."""
     flash("You must be logged in to view that page.")
     return redirect(url_for("auth.login"))

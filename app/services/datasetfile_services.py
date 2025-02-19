@@ -5,7 +5,7 @@ import uuid
 from flask_login import current_user
 import pandas as pd
 import numpy as np
-from flask import current_app
+from flask import current_app, session
 from app import db
 from app.models.DatasetFile.model import DatasetFile
 from sklearn.preprocessing import MinMaxScaler
@@ -50,12 +50,15 @@ class DatasetFileService:
             # Create the full file path
             file_path = os.path.join(folder, os.path.basename(unique_filename))
 
+            # Set the file path into the session
+            session["dataset_file_path"] = file_path
+
             # Convert the file into a CSV string
-            converted_file = DatasetFileService.convert_to_csv(df_preprocessed)
+            df_csv_string = DatasetFileService.convert_to_csv(df_preprocessed)
 
             # Save the CSV content to the file
             with open(file_path, "wb") as f:
-                f.write(converted_file.getvalue())
+                f.write(df_csv_string.getvalue())
 
             # Save the metadata to the database
             metadata = DatasetFile(
@@ -68,12 +71,19 @@ class DatasetFileService:
             db.session.add(metadata)
             db.session.commit()
 
-            return file_path  # Return the file path if all operations are successful
+            return True  # Return True if all operations are successful
 
         except Exception as e:
             print(f"Error while saving dataset file: {e}")
             db.session.rollback()  # In case of failure, rollback the session
-            return None  # Return None
+            return False  # Return False
+
+    @staticmethod
+    def get_session_dataframe():
+        file_path = session.get("dataset_file_path")
+
+        with open(file_path, "rb") as file:
+            return pd.read_csv(file)
 
     @staticmethod
     def preprocess_dataset(df, ml_process):

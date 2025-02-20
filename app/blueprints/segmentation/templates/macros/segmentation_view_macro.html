@@ -15,7 +15,7 @@
             >
                 <button
                     type="submit"
-                    class="text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-4 focus:outline-none focus:ring-white font-medium rounded-md text-sm px-5 py-2.5 text-center"
+                    class="text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm px-5 py-2.5 text-center"
                 >
                     Change file
                 </button>
@@ -23,8 +23,8 @@
         </div>
     </div>
 
-    <!-- Segmentation output chart -->
     <div class="border-white w-full flex justify-center items-center">
+        <!-- Segmentation output chart -->
         {% from
         "macros/segmentation_view_submacros/segmentation_chart_macro.html"
         import segmentation_chart %} {{segmentation_chart()}}

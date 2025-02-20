@@ -90,9 +90,8 @@ class DatasetFileService:
         """Cleans the dataset, engineers features, and scales the dataset."""
         df_cleaned = DatasetFileService.clean_dataset(df)
         df_engineered = DatasetFileService.engineer_features(df_cleaned, ml_process)
-        df_scaled = DatasetFileService.scale_dataset(df_engineered)
 
-        df_preprocessed = df_scaled.copy()
+        df_preprocessed = df_engineered.copy()
         return df_preprocessed
 
     @staticmethod
@@ -123,16 +122,6 @@ class DatasetFileService:
             return df_engineered
         else:
             raise ValueError(f"Unsupported ML process {ml_process}")
-
-    @staticmethod
-    def scale_dataset(df):
-        """Scales the dataset."""
-        scaler = MinMaxScaler()
-        df_scaled = df.copy()
-        numcols = df.select_dtypes(include=[np.number]).columns.tolist()
-        df_scaled[numcols] = scaler.fit_transform(df_scaled[numcols])
-
-        return df_scaled
 
     @staticmethod
     def set_correct_folder(ml_process):

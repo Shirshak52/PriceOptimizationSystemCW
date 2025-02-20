@@ -1,16 +1,14 @@
 {% macro segmentation_chart() %}
-<div
-    class="max-w-lg p-6 mx-auto bg-fyp-primary-100 border border-gray-200 rounded-lg shadow-sm"
->
-    <canvas id="clusterChart"></canvas>
+<div class="w-full h-auto p-2 mx-auto border-x border-white text-white">
+    <canvas id="clusterChart" width="auto" height="auto"></canvas>
 </div>
 
 <script type="text/javascript">
     // Get the chart context
-    var context = document.getElementById("clusterChart").getContext("2d");
+    const context = document.getElementById("clusterChart").getContext("2d");
 
     // Create the chart using Chart.js
-    var clusterChart = new Chart(context, {
+    const clusterChart = new Chart(context, {
         type: "doughnut", // Type of chart
         data: {
             labels: [], // Will be populated with cluster labels
@@ -25,7 +23,7 @@
                         "#F4D35E",
                         "#BC63F8",
                     ],
-                    borderColor: "#D5D6D8", // Border color of each section of the chart
+                    borderColor: "#202020", // Border color of each section of the chart
                 },
             ],
         },
@@ -33,37 +31,134 @@
             responsive: true,
             plugins: {
                 legend: {
-                    position: "top",
+                    position: "left",
+                    labels: {
+                        color: "#FFFFFF",
+                        padding: 20,
+                    },
                 },
                 title: {
                     display: true,
                     text: "Customer Composition",
-                    font: {
-                        size: 22,
+                    font: { size: 22 },
+                    color: "#FFFFFF",
+                },
+                subtitle: {
+                    display: true,
+                    text: "",
+                    color: "#FFFFFF",
+                    font: { size: 18 },
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            const total =
+                                clusterChart.data.datasets[0].data.reduce(
+                                    (a, b) => a + b,
+                                    0
+                                );
+                            const count =
+                                clusterChart.data.datasets[0].data[
+                                    tooltipItem.dataIndex
+                                ];
+                            const percentage = ((count / total) * 100).toFixed(
+                                2
+                            );
+                            return `${percentage}%`;
+                        },
                     },
                 },
             },
         },
     });
 
-    // Function to fetch cluster counts from the server
-    function fetchClusterCounts() {
-        fetch("get_cluster_counts") // Fetch data from the endpoint
-            .then((response) => response.json()) // Then get the cluster counts JSON object from the response
+    // Function to fetch cluster profiles (counts and metric averages) from the server
+    function fetchClusterProfiles() {
+        fetch("get_cluster_profiles") // Fetch data from the endpoint
+            .then((response) => response.json()) // Parse the JSON response
             .then((data) => {
-                // If cluster counts is not empty, update the chart UI
-                if (data && Object.keys(data).length > 0) {
-                    clusterChart.data.labels = Object.keys(data); // Set the data labels
-                    clusterChart.data.datasets[0].data = Object.values(data); // Set the data values
-                    clusterChart.update(); // Update the UI
+                if (data?.cluster_counts) {
+                    const clusterKeys = Object.keys(data.cluster_counts);
+
+                    // Update labels with cluster averages
+                    clusterChart.data.labels = clusterKeys.map((key) => {
+                        const avgMetric =
+                            data.metric_averages?.[key]?.toFixed(2) || "N/A";
+                        return `Cluster ${
+                            parseInt(key) + 1
+                        } (Avg: ${avgMetric})`;
+                    });
+
+                    // Update the data values for the chart
+                    clusterChart.data.datasets[0].data = clusterKeys.map(
+                        (key) => data.cluster_counts[key]
+                    );
+
+                    // Update tooltip label callback
+                    clusterChart.options.plugins.tooltip.callbacks.label = (
+                        tooltipItem
+                    ) => {
+                        const clusterKey = clusterKeys[tooltipItem.dataIndex];
+                        const percentage =
+                            data.cluster_percentages?.[clusterKey]?.toFixed(
+                                2
+                            ) || "N/A";
+                        return `${percentage}%`;
+                    };
+
+                    // Set the chosen metric as the subtitle
+                    clusterChart.options.plugins.subtitle.text = `Based on ${data.chosen_metric}`;
+
+                    // Update the chart UI
+                    clusterChart.update();
+
+                    // Stop polling once the UI has been updated
+                    clearInterval(pollingInterval);
+                    pollingInterval = null; // Reset the interval ID
                 }
             })
             .catch((error) =>
-                console.error("Error fetching cluster counts:", error)
+                console.error("Error fetching cluster profiles:", error)
             );
     }
 
-    // Call the get_cluster_counts endpoint every 3 seconds
-    setInterval(fetchClusterCounts, 3000);
+    let pollingInterval;
+
+    document
+        .getElementById("segmentation-parameters-form")
+        .addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default submission
+
+            // Submit the form to the endpoint
+            fetch("cluster_customers", {
+                method: "POST",
+                body: new FormData(this),
+            })
+                .then((response) => response.json()) // Parse the JSON response
+                .then((data) => {
+                    // Check if clustering was successful
+                    if (data.success) {
+                        console.log(
+                            "Successfully clustered, starting polling..."
+                        );
+
+                        // Start polling after form submission and clustering completion
+                        if (!pollingInterval) {
+                            pollingInterval = setInterval(
+                                fetchClusterProfiles,
+                                3000
+                            );
+                        }
+                    } else {
+                        console.error("Clustering failed");
+                    }
+                })
+                .catch((error) => {
+                    console.error(
+                        "Error submitting form for clustering:",
+                        error
+                    );
+                });
+        });
 </script>
 {% endmacro %}

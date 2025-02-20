@@ -1,7 +1,8 @@
 {% macro segmentation_parameters_form(form) %}
 <form
+    id="segmentation-parameters-form"
     method="post"
-    action="{{ url_for('segm.cluster_customers') }}"
+    action=""
     class="border-b border-white flex flex-col items-center justify-center mx-4 py-5 px-8"
     enctype="multipart/form-data"
 >
@@ -11,35 +12,27 @@
     <div class="border-white flex flex-col justify-center w-full max-w-sm">
         <!-- Dropdown to select segmentation metric -->
         <fieldset class="border-white flex flex-col">
-            <label
-                class="text-sm font-medium text-white dark:text-white"
-                for="metric"
-            >
+            <label class="text-sm font-medium text-white" for="metric">
                 {{ form.metric.label }}
             </label>
             {{ form.metric( id="metric", class="text-black bg-fyp-primary-100
-            hover:bg-gray-300 focus:ring-4 focus:outline-none
-            focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-2
-            text-center dark:bg-blue-600 dark:hover:bg-blue-700
-            dark:focus:ring-blue-800", required=True ) }}
+            hover:bg-white focus:ring-2 focus:outline-none
+            focus:ring-fyp-primary-100 font-medium rounded-lg text-sm px-5
+            py-2.5 mt-2 text-center", required=True ) }}
         </fieldset>
 
         <!-- Number of clusters to form -->
         <fieldset class="border-white mt-6 flex flex-col">
             <!-- Radio button for number of clusters (auto/custom) -->
-            <label class="text-sm font-medium text-white dark:text-white">
+            <label class="text-sm font-medium text-white">
                 {{ form.number_choice.label }}
             </label>
             <div class="grid grid-cols-5 gap-1 mt-2">
                 {% for subfield in form.number_choice %}
                 <div class="flex items-center">
                     {{ subfield( class="w-4 h-4 border-gray-300 focus:ring-2
-                    focus:ring-blue-300 dark:focus:ring-blue-600
-                    dark:focus:bg-blue-600 dark:bg-gray-700
-                    dark:border-gray-600", ) }}
-                    <label
-                        class="ms-2 me-4 text-sm font-medium text-white dark:text-gray-300"
-                    >
+                    focus:ring-fyp-primary-100 ", ) }}
+                    <label class="ms-2 me-4 text-sm font-medium text-white">
                         {{ subfield.label.text }}
                     </label>
                 </div>
@@ -52,7 +45,7 @@
         <!-- Check if there are messages -->
         {% if messages %}
         <div
-            class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-red-50"
             role="alert"
         >
             <!-- Display each message -->
@@ -65,8 +58,8 @@
 
     <!-- Submit button -->
     {{ form.submit(class="text-white bg-fyp-tertiary-100
-    hover:bg-fyp-tertiary-200 focus:ring-4 focus:outline-none
-    focus:ring-fyp-tertiary-100 font-medium rounded-md text-sm mt-8 px-5 py-2.5
+    hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none
+    focus:ring-fyp-primary-100 font-medium rounded-md text-sm mt-8 px-5 py-2.5
     text-center") }}
 </form>
 

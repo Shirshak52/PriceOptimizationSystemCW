@@ -35,7 +35,7 @@ def handle_login():
 def logout():
     """Logs the user out."""
     logout_user()
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.show_login"))
 
 
 # User loader and Unauthorized handler
@@ -55,4 +55,4 @@ def load_user(user_id):
 def unauthorized():
     """Redirects unauthorized users to Login page."""
     flash("You must be logged in to view that page.")
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.show_login"))

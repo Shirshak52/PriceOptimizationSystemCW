@@ -95,23 +95,43 @@ def cluster_customers():
         # Retrieve number of clusters and clustering metric from the form
         num_of_clusters = form.number_choice.data
         chosen_metric = form.metric.data
+        session["chosen_metric"] = (
+            chosen_metric  # Set the chosen metric into the session
+        )
 
         # Cluster the dataset and set cluster counts in the session
-        cluster_counts = SegmentationService.segment_customers(
+        cluster_counts, metric_averages = SegmentationService.segment_customers(
             df, num_of_clusters, chosen_metric
-        ).to_dict()
+        )
         session["cluster_counts"] = cluster_counts
+        session["metric_averages"] = metric_averages
+        return jsonify({"success": True})
     else:
         print("segm form not passedd", form.errors)
+        return jsonify({"success": False}), 400
+    # return redirect(url_for("segm.segmentation_dashboard"))
 
-    return redirect(url_for("segm.segmentation_dashboard"))
 
-
-@segmentation_bp.route("/get_cluster_counts", methods=["GET"])
+@segmentation_bp.route("/get_cluster_profiles", methods=["GET"])
 @login_required
-def get_cluster_counts():
-    """Returns the cluster counts stored in the session."""
+def get_cluster_profiles():
+    """Returns the chosen metric, cluster counts, and metric averages stored in the session."""
 
-    # Get the cluster counts from the session, if none get an empty dict
+    # Get the chosen metric, cluster counts, and metric averages from the session
+    chosen_metric = session.get("chosen_metric", "Metric not chosen")
     cluster_counts = session.get("cluster_counts", {})
-    return jsonify(cluster_counts)
+    metric_averages = session.get("metric_averages", {})
+
+    total_customers = sum(cluster_counts.values())
+    cluster_percentages = {
+        cluster: (count / total_customers * 100) if total_customers > 0 else 0
+        for cluster, count in cluster_counts.items()
+    }
+    return jsonify(
+        {
+            "cluster_counts": cluster_counts,
+            "metric_averages": metric_averages,
+            "cluster_percentages": cluster_percentages,
+            "chosen_metric": chosen_metric,
+        }
+    )

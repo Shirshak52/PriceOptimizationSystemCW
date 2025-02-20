@@ -1,13 +1,20 @@
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import MinMaxScaler
 
 
 class SegmentationService:
     @staticmethod
     def segment_customers(df, num_of_clusters, chosen_metric):
-        """Performs KMeans Clustering and returns an output chart that reflects the clustered data."""
+        """Performs KMeans Clustering and returns cluster profiles (cluster counts and metric averages)."""
+
+        # Set a copy of the original dataset with the chosen metric
+        df_original = df[[chosen_metric]].copy()
+
+        # Scale the dataset with the chosen metric
         df_clustering = df[[chosen_metric]].copy()
+        df_clustering = SegmentationService.scale_dataset(df_clustering)
 
         # Number of clusters
         n_clusters = (
@@ -20,11 +27,15 @@ class SegmentationService:
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
         # Cluster the data and return labels
-        df_clustering["Cluster"] = kmeans.fit_predict(df_clustering)
+        df_original["Cluster"] = kmeans.fit_predict(df_clustering)
 
-        # return the cluster counts in JSON format
-        cluster_counts = df_clustering["Cluster"].value_counts()
-        return cluster_counts
+        # Calculate the cluster counts and the metric averages
+        cluster_counts, metric_averages = SegmentationService.get_cluster_profiles(
+            df_original, chosen_metric
+        )
+
+        # Return the cluster counts and metric averages dicts
+        return cluster_counts, metric_averages
 
     @staticmethod
     def get_optimal_num_of_clusters(df_clustering):
@@ -40,6 +51,24 @@ class SegmentationService:
             silhouette_scores.append(silhouette_avg)
 
         return cluster_range[np.argmax(silhouette_scores)]
+
+    @staticmethod
+    def scale_dataset(df):
+        """Scales the dataset."""
+        scaler = MinMaxScaler()
+        df_scaled = df.copy()
+        numcols = df.select_dtypes(include=[np.number]).columns.tolist()
+        df_scaled[numcols] = scaler.fit_transform(df_scaled[numcols])
+
+        return df_scaled
+
+    @staticmethod
+    def get_cluster_profiles(df_original, chosen_metric):
+        """Calculates the cluster counts and metric averages."""
+        cluster_counts = df_original["Cluster"].value_counts().to_dict()
+        metric_averages = df_original.groupby("Cluster")[chosen_metric].mean().to_dict()
+
+        return cluster_counts, metric_averages
 
     @staticmethod
     def engineer_features(df):

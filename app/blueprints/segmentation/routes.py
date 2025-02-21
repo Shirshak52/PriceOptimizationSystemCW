@@ -50,10 +50,11 @@ def upload_dataset_file():
 
             # Validate and save the file
             if DatasetFileService.validate_datasetfile(file):
-                file_is_saved = DatasetFileService.save_datasetfile(
+                file_is_saved, dataset_file_id = DatasetFileService.save_datasetfile(
                     file, "segmentation"
                 )
                 session["file_uploaded"] = file_is_saved
+                session["dataset_file_id"] = dataset_file_id
 
             else:
                 flash(
@@ -109,7 +110,6 @@ def cluster_customers():
     else:
         print("segm form not passedd", form.errors)
         return jsonify({"success": False}), 400
-    # return redirect(url_for("segm.segmentation_dashboard"))
 
 
 @segmentation_bp.route("/get_cluster_profiles", methods=["GET"])
@@ -135,3 +135,27 @@ def get_cluster_profiles():
             "chosen_metric": chosen_metric,
         }
     )
+
+
+@segmentation_bp.route("save_to_db", methods=["POST"])
+@login_required
+def save_to_db():
+    # Get the dataset file ID, chosen metric, cluster counts, and metric averages
+    dataset_file_id = session.get("dataset_file_id")
+    chosen_metric = session.get("chosen_metric", "Metric not chosen")
+    cluster_counts = session.get("cluster_counts", {})
+    metric_averages = session.get("metric_averages", {})
+
+    try:
+        # Save the data to the database
+        SegmentationService.save_to_db(
+            dataset_file_id, chosen_metric, cluster_counts, metric_averages
+        )
+
+        # Return a success response
+        print("Segmentation report saved successfully!")
+        return jsonify({"message": "Segmentation report saved successfully!"}), 200
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"Error": str(e)}), 500

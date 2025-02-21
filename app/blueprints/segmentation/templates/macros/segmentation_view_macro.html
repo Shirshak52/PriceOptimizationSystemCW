@@ -7,17 +7,32 @@
         import segmentation_parameters_form %}
         {{segmentation_parameters_form(form=form)}}
 
-        <!-- Change file button -->
-        <div class="mt-4">
+        <!-- Change file and Download buttons -->
+        <div
+            class="mt-4 flex gap-2 items-center justify-between border-white w-full max-w-sm"
+        >
+            <!-- Change file button -->
             <form
+                class="flex-1 border-white w-full"
                 method="post"
                 action="{{ url_for('segm.change_dataset_file') }}"
             >
                 <button
                     type="submit"
-                    class="text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm px-5 py-2.5 text-center"
+                    class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm px-5 py-2.5 text-center"
                 >
                     Change file
+                </button>
+            </form>
+
+            <!-- Download report button -->
+            <form class="flex-1 border-white w-full">
+                <button
+                    id="download-segmentation-report-button"
+                    type="submit"
+                    class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm px-5 py-2.5 text-center"
+                >
+                    Download Report
                 </button>
             </form>
         </div>

@@ -25,6 +25,9 @@ class Cluster(db.Model):
     # PRIMARY KEY END=================================================
 
     # CLUSTER PROFILE DATA START=================================================
+    # Number of customers inside the cluster
+    cluster_count = db.Column(db.Integer, nullable=False)
+
     # Average value of the chosen clustering metric
     metric_avg = db.Column(db.Float, nullable=False)
     # CLUSTER PROFILE DATA END=================================================

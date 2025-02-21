@@ -1,10 +1,47 @@
+from flask import request
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import MinMaxScaler
 
+from app import db
+from app.models.Cluster.model import Cluster
+from app.models.Segmentation.model import Segmentation
+
 
 class SegmentationService:
+    @staticmethod
+    def save_to_db(dataset_file_id, chosen_metric, cluster_counts, metric_averages):
+        """Saves the segmentation and cluster details to the database."""
+
+        # Save segmentation details to the db
+        num_of_clusters = len(cluster_counts)
+
+        segmentation = Segmentation(
+            chosen_metric=chosen_metric,
+            num_of_clusters=num_of_clusters,
+            dataset_file_id=dataset_file_id,
+        )
+        db.session.add(segmentation)
+        db.session.commit()
+        segmentation_id = segmentation.id
+
+        # Save cluster details to the db
+        clusters = []
+        for cluster_id, cluster_count in cluster_counts.items():
+            metric_avg = metric_averages.get(cluster_id, None)
+
+            cluster = Cluster(
+                segmentation_id=segmentation_id,
+                cluster_id=int(cluster_id),
+                cluster_count=int(cluster_count),
+                metric_avg=metric_avg,
+            )
+            clusters.append(cluster)
+
+        db.session.add_all(clusters)
+        db.session.commit()
+
     @staticmethod
     def segment_customers(df, num_of_clusters, chosen_metric):
         """Performs KMeans Clustering and returns cluster profiles (cluster counts and metric averages)."""

@@ -8,7 +8,6 @@ import numpy as np
 from flask import current_app, session
 from app import db
 from app.models.DatasetFile.model import DatasetFile
-from sklearn.preprocessing import MinMaxScaler
 
 
 class DatasetFileService:
@@ -67,11 +66,15 @@ class DatasetFileService:
                 branch_id=current_user.id,
             )
 
-            # Add to the session and commit
+            # Add to the db and commit
             db.session.add(metadata)
             db.session.commit()
+            dataset_file_id = metadata.id
 
-            return True  # Return True if all operations are successful
+            return (
+                True,
+                dataset_file_id,
+            )  # Return True and the dataset file id if all operations are successful
 
         except Exception as e:
             print(f"Error while saving dataset file: {e}")

@@ -1,5 +1,6 @@
 from flask import redirect, flash, request, url_for
 from flask_login import login_user
+
 from app.models.Branch.crud import BranchUserCrud
 
 

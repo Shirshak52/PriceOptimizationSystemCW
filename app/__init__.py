@@ -1,6 +1,4 @@
-from flask_socketio import SocketIO
 from flask import Flask, session
-from celery import Celery
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -10,8 +8,6 @@ from app.config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-celery = Celery()
-socketio = SocketIO()
 
 
 def create_app():
@@ -23,8 +19,6 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    celery.conf.update(app.config)
-    socketio.init_app(app)
 
     # Within the app context
     with app.app_context():

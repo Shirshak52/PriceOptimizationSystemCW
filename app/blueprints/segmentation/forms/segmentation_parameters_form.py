@@ -1,6 +1,6 @@
+from wtforms import SelectField, RadioField, SubmitField
+from wtforms.validators import InputRequired
 from flask_wtf import FlaskForm
-from wtforms import SelectField, RadioField, IntegerField, SubmitField
-from wtforms.validators import InputRequired, NumberRange
 
 
 class SegmentationParametersForm(FlaskForm):

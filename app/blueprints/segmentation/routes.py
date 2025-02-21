@@ -1,14 +1,15 @@
-from flask import jsonify, request, redirect, render_template, url_for, flash, session
-from flask_login import login_required, logout_user, current_user
+from flask import jsonify, redirect, render_template, url_for, flash, session
+from flask_login import login_required
+from werkzeug.exceptions import RequestEntityTooLarge
+
+from app.services.datasetfile_services import DatasetFileService
+from app.services.segmentation_services import SegmentationService
+
+from app.blueprints.segmentation import segmentation_bp
 from app.blueprints.segmentation.forms.file_upload_form import FileUploadForm
 from app.blueprints.segmentation.forms.segmentation_parameters_form import (
     SegmentationParametersForm,
 )
-from app.blueprints.segmentation import segmentation_bp
-from app.services.datasetfile_services import DatasetFileService
-from werkzeug.exceptions import RequestEntityTooLarge
-
-from app.services.segmentation_services import SegmentationService
 
 
 @segmentation_bp.route("/", methods=["GET"])

@@ -1,8 +1,9 @@
 from flask import redirect, render_template, url_for, flash
 from flask_login import login_required, logout_user, current_user
-from app.blueprints.auth.forms.loginform import LoginForm
+
 from app.blueprints.auth import auth_bp
 from app.blueprints.auth.services import LoginService
+from app.blueprints.auth.forms.loginform import LoginForm
 
 
 @auth_bp.route("/login/", methods=["GET"])

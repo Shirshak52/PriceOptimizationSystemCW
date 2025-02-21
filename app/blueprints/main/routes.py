@@ -1,6 +1,7 @@
 from flask import render_template
-from app.blueprints.main import main_bp
 from flask_login import login_required
+
+from app.blueprints.main import main_bp
 
 
 @main_bp.route("/")

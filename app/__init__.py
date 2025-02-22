@@ -37,15 +37,18 @@ def create_app():
         # Import routes
         from app.blueprints.main import routes
         from app.blueprints.auth import routes
+        from app.blueprints.prediction import routes
         from app.blueprints.segmentation import routes
 
         # Register blueprints
         from app.blueprints.main import main_bp
         from app.blueprints.auth import auth_bp
+        from app.blueprints.prediction import prediction_bp
         from app.blueprints.segmentation import segmentation_bp
 
         app.register_blueprint(main_bp)
         app.register_blueprint(auth_bp)
+        app.register_blueprint(prediction_bp)
         app.register_blueprint(segmentation_bp)
 
     return app

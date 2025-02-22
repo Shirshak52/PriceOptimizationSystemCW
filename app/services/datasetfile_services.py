@@ -18,6 +18,7 @@ class DatasetFileService:
         "Product ID",
         "Customer ID",
         "Order Date",
+        "Price",
         "Quantity",
         "Sales",
     ]
@@ -26,7 +27,7 @@ class DatasetFileService:
     idcols = ["Product ID", "Customer ID"]
 
     # Numerical columns of the dataset
-    numcols = ["Quantity", "Sales"]
+    numcols = ["Quantity", "Sales", "Price"]
 
     # Date column of the dataset
     datecol = "Order Date"
@@ -120,10 +121,20 @@ class DatasetFileService:
     @staticmethod
     def engineer_features(df, ml_process):
         """Engineers features according to the ML process."""
+        # Segmentation
         if ml_process == "segmentation":
-            from app.services.segmentation_services import SegmentationService
+            from app.services.segmentation.segmentation_services import (
+                SegmentationService,
+            )
 
             df_engineered = SegmentationService.engineer_features(df)
+            return df_engineered
+
+        # Prediction
+        elif ml_process == "prediction":
+            from app.services.prediction.prediction_services import PredictionService
+
+            df_engineered = PredictionService.engineer_features(df)
             return df_engineered
         else:
             raise ValueError(f"Unsupported ML process {ml_process}")
@@ -167,6 +178,7 @@ class DatasetFileService:
     @staticmethod
     def convert_to_df(file):
         """Converts files into a Pandas Dataframe."""
+        file.seek(0)
         # Excel
         if file.filename.endswith((".xls", ".xlsx")):
             df = pd.read_excel(file)
@@ -176,8 +188,11 @@ class DatasetFileService:
             df = pd.read_json(file)
 
         # CSV
+        elif file.filename.endswith(".csv"):
+            df = pd.read_csv(file, encoding="utf-8")
+
         else:
-            df = pd.read_csv(file)
+            print("Not a valid file format.")
 
         return df
 

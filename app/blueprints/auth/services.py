@@ -20,4 +20,4 @@ class LoginService:
 
         # If user does not exist, flash error message
         flash("Invalid username/password.")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.show_login"))

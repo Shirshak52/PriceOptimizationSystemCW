@@ -2,11 +2,12 @@ from flask import jsonify, redirect, render_template, url_for, flash, session
 from flask_login import login_required
 from werkzeug.exceptions import RequestEntityTooLarge
 
+from app.forms.file_upload_form import FileUploadForm
+
 from app.services.datasetfile_services import DatasetFileService
-from app.services.segmentation_services import SegmentationService
+from app.services.segmentation.segmentation_services import SegmentationService
 
 from app.blueprints.segmentation import segmentation_bp
-from app.blueprints.segmentation.forms.file_upload_form import FileUploadForm
 from app.blueprints.segmentation.forms.segmentation_parameters_form import (
     SegmentationParametersForm,
 )
@@ -37,7 +38,7 @@ def segmentation_dashboard():
 
 @segmentation_bp.route("/upload", methods=["POST"])
 @login_required
-def upload_dataset_file():
+def upload_segmentation_dataset_file():
     """Validates the file-uploading form and saves it after preprocessing."""
 
     # File-uploading form
@@ -74,7 +75,7 @@ def upload_dataset_file():
 
 @segmentation_bp.route("/change_file", methods=["POST"])
 @login_required
-def change_dataset_file():
+def change_segmentation_dataset_file():
     """Redirects user back to the file-uploading form."""
     session["file_uploaded"] = False
     return redirect(url_for("segm.segmentation_dashboard"))
@@ -140,7 +141,7 @@ def get_cluster_profiles():
 
 @segmentation_bp.route("save_to_db", methods=["POST"])
 @login_required
-def save_to_db():
+def save_segmentation_to_db():
     # Get the dataset file ID, chosen metric, cluster counts, and metric averages
     dataset_file_id = session.get("dataset_file_id")
     chosen_metric = session.get("chosen_metric", "Metric not chosen")

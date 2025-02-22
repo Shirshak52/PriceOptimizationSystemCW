@@ -1,0 +1,153 @@
+from flask import jsonify, redirect, render_template, url_for, flash, session
+from flask_login import login_required
+from werkzeug.exceptions import RequestEntityTooLarge
+
+from app.forms.file_upload_form import FileUploadForm
+
+from app.services.datasetfile_services import DatasetFileService
+
+# from app.services.segmentation_services import SegmentationService
+
+from app.blueprints.prediction import prediction_bp
+
+
+@prediction_bp.route("/", methods=["GET"])
+@login_required
+def prediction_dashboard():
+    """Presents the prediction page with the file-uploading form."""
+
+    # File-uploading form
+    file_upload_form = FileUploadForm()
+
+    # Render prediction.html with the 2 forms
+    return render_template(
+        "prediction.html",
+        file_upload_form=file_upload_form,
+    )
+
+
+@prediction_bp.route("/upload", methods=["POST"])
+@login_required
+def upload_prediction_dataset_file():
+    """Validates the file-uploading form and saves it after preprocessing."""
+
+    # File-uploading form
+    form = FileUploadForm()
+
+    if form.validate_on_submit():
+        print("FORM VALIDATION PASSED")
+        try:
+            # Retrieve the file
+            file = form.file.data
+
+            # Validate and save the file
+            if DatasetFileService.validate_datasetfile(file):
+                file_is_saved, dataset_file_id = DatasetFileService.save_datasetfile(
+                    file, "prediction"
+                )
+                session["file_uploaded"] = file_is_saved
+                session["dataset_file_id"] = dataset_file_id
+
+            else:
+                flash(
+                    "Upload unsuccessful. Ensure that all mentioned columns exist and that their datatypes are appropriate.",
+                    "error",
+                )
+
+        except RequestEntityTooLarge:
+            flash("The file is too large. Please upload a smaller file.", "error")
+
+    else:
+        print("FORM VAL FAILED", form.errors)
+
+    return redirect(url_for("pred.prediction_dashboard"))
+
+
+# @prediction_bp.route("/change_file", methods=["POST"])
+# @login_required
+# def change_dataset_file():
+#     """Redirects user back to the file-uploading form."""
+#     session["file_uploaded"] = False
+#     return redirect(url_for("pred.prediction_dashboard"))
+
+
+# @segmentation_bp.route("/cluster_customers", methods=["POST"])
+# @login_required
+# def cluster_customers():
+#     """Takes input from Segmentation Parameters form and returns cluster counts after segmentation."""
+
+#     # Form to input number of clusters and clustering metric
+#     form = SegmentationParametersForm()
+
+#     if form.validate_on_submit():
+#         print("segm form passedd")
+
+#         # Get the dataset inside the submitted file
+#         df = DatasetFileService.get_session_dataframe()
+
+#         # Retrieve number of clusters and clustering metric from the form
+#         num_of_clusters = form.number_choice.data
+#         chosen_metric = form.metric.data
+#         session["chosen_metric"] = (
+#             chosen_metric  # Set the chosen metric into the session
+#         )
+
+#         # Cluster the dataset and set cluster counts in the session
+#         cluster_counts, metric_averages = SegmentationService.segment_customers(
+#             df, num_of_clusters, chosen_metric
+#         )
+#         session["cluster_counts"] = cluster_counts
+#         session["metric_averages"] = metric_averages
+#         return jsonify({"success": True})
+#     else:
+#         print("segm form not passedd", form.errors)
+#         return jsonify({"success": False}), 400
+
+
+# @segmentation_bp.route("/get_cluster_profiles", methods=["GET"])
+# @login_required
+# def get_cluster_profiles():
+#     """Returns the chosen metric, cluster counts, and metric averages stored in the session."""
+
+#     # Get the chosen metric, cluster counts, and metric averages from the session
+#     chosen_metric = session.get("chosen_metric", "Metric not chosen")
+#     cluster_counts = session.get("cluster_counts", {})
+#     metric_averages = session.get("metric_averages", {})
+
+#     total_customers = sum(cluster_counts.values())
+#     cluster_percentages = {
+#         cluster: (count / total_customers * 100) if total_customers > 0 else 0
+#         for cluster, count in cluster_counts.items()
+#     }
+#     return jsonify(
+#         {
+#             "cluster_counts": cluster_counts,
+#             "metric_averages": metric_averages,
+#             "cluster_percentages": cluster_percentages,
+#             "chosen_metric": chosen_metric,
+#         }
+#     )
+
+
+# @segmentation_bp.route("save_to_db", methods=["POST"])
+# @login_required
+# def save_to_db():
+#     # Get the dataset file ID, chosen metric, cluster counts, and metric averages
+#     dataset_file_id = session.get("dataset_file_id")
+#     chosen_metric = session.get("chosen_metric", "Metric not chosen")
+#     cluster_counts = session.get("cluster_counts", {})
+#     metric_averages = session.get("metric_averages", {})
+
+#     try:
+#         # Save the data to the database
+#         SegmentationService.save_to_db(
+#             dataset_file_id, chosen_metric, cluster_counts, metric_averages
+#         )
+
+#         # Return a success response
+#         print("Segmentation report saved successfully!")
+#         return jsonify({"message": "Segmentation report saved successfully!"}), 200
+
+#     except Exception as e:
+#         print("Error:", e)
+#         return jsonify({"Error": str(e)}), 500

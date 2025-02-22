@@ -1,0 +1,27 @@
+{% extends "baselayout.html" %}
+<!-- Page title -->
+{% block title %}Predict Sales - OptiPrice{% endblock %} {% block content %}
+
+<!-- Page content -->
+<!-- Page header -->
+<h1
+    class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-center text-black md:text-5xl lg:text-6xl dark:text-white"
+>
+    Predict your
+    <span class="text-fyp-tertiary-100">Sales</span>
+</h1>
+<div
+    class="w-full border-white flex justify-center items-center bg-fyp-secondary-100 p-8 m-4"
+>
+    <!-- File upload input field -->
+    {% from "macros/prediction_file_upload_macro.html" import file_upload %}
+    {{file_upload(form=file_upload_form)}}
+
+    <!-- Prediction chart macro -->
+    {% from "macros/prediction_chart_macro.html" import prediction_chart %}
+    {{prediction_chart()}}
+</div>
+
+<script src="{{ url_for('pred.static', filename='js/prediction_chart.js') }}"></script>
+
+{% endblock %}

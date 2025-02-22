@@ -178,7 +178,7 @@ async function downloadChart(event) {
 
     try {
         // Trigger the endpoint to save clustering data in the db as well
-        const response = await fetch("save_to_db", {
+        const response = await fetch("save_segmentation_to_db", {
             method: "POST",
         });
 

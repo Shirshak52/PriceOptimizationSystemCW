@@ -1,0 +1,24 @@
+{% macro prediction_chart() %}
+<div
+    class="w-full h-auto p-2 mx-auto border-x border-white text-white flex flex-col justify-center items-center"
+>
+    <canvas
+        id="prediction-chart"
+        width="auto"
+        height="auto"
+        class="border-b border-white w-full h-full"
+    ></canvas>
+
+    <!-- Download report button -->
+    <form class="border-white">
+        <button
+            id="download-prediction-report-button"
+            type="submit"
+            class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm mt-4 px-5 py-2.5 text-center"
+        >
+            Download Report
+        </button>
+    </form>
+</div>
+
+{% endmacro %}

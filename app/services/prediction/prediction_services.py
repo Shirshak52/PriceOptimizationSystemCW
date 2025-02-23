@@ -1,3 +1,4 @@
+from flask import session
 import numpy as np
 
 # from sklearn.cluster import KMeans
@@ -44,10 +45,15 @@ class PredictionService:
         df_monthly = PredictionServiceMonthly.engineer_features(df_timeframes)
         df_quarterly = PredictionServiceQuarterly.engineer_features(df_timeframes)
 
-        # Drop Product ID before concatenating
+        # Drop Product ID
         df_weekly = df_weekly.drop(columns=["Product ID"])
         df_monthly = df_monthly.drop(columns=["Product ID"])
         df_quarterly = df_quarterly.drop(columns=["Product ID"])
+
+        # Save the dataframes to the session
+        session["prediction_df_weekly"] = df_weekly
+        session["prediction_df_monthly"] = df_monthly
+        session["prediction_df_quarterly"] = df_quarterly
 
         # Vertically concatenate the datasets
         df_combined = pd.concat(

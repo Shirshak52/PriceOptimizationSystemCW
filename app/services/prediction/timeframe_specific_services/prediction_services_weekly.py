@@ -1,4 +1,41 @@
+import os
+from flask import current_app
+from joblib import load
+
+
 class PredictionServiceWeekly:
+
+    model_dir = current_app.config["MODELS_FOLDER_PREDICTION"]
+    weekly_pred_model = load(os.path.join(model_dir, "xgboost_weekly.joblib"))
+
+    weekly_X_cols = [
+        "Price This Week",
+        "Price Last Week",
+        # "Sales This Week",
+        # "Sales Last Week",
+        # "Quantity This Week",
+        # "Quantity Last Week",
+        # "Price Change (%)",
+        # "Sales Growth Rate",
+        # "Stock to Sales Ratio",
+        # "Momentum",
+        "Rolling Average Sales",
+        # "Price-to-Sales Ratio",
+    ]
+
+    @staticmethod
+    def predict_weekly_sales(df_weekly):
+        """Predicts the sales next week from the given dataset."""
+        prediction_X_weekly = df_weekly[PredictionServiceWeekly.weekly_X_cols]
+
+        weekly_predictions = PredictionServiceWeekly.weekly_pred_model.predict(
+            prediction_X_weekly
+        )
+
+        total_weekly_prediction = weekly_predictions.sum()
+
+        return total_weekly_prediction
+
     @staticmethod
     def engineer_features(df_timeframes):
         df_weekly = df_timeframes.copy().drop(columns=["Year-Month", "Year-Quarter"])

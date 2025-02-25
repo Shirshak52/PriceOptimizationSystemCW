@@ -1,4 +1,43 @@
+import os
+from flask import current_app
+from joblib import load
+
+
 class PredictionServiceQuarterly:
+
+    model_dir = current_app.config["MODELS_FOLDER_PREDICTION"]
+    quarterly_pred_model = load(os.path.join(model_dir, "xgboost_quarterly.joblib"))
+
+    quarterly_X_cols = [
+        # "Price This Quarter",
+        "Price Last Quarter",
+        # "Sales This Quarter",
+        # "Sales Last Quarter",
+        # "Quantity This Quarter",
+        # "Quantity Last Quarter",
+        # "Price Change (%)",
+        # "Sales Growth Rate",
+        "Stock to Sales Ratio",
+        # "Momentum",
+        "Rolling Average Sales",
+        # "Price-to-Sales Ratio",
+    ]
+
+    @staticmethod
+    def predict_quarterly_sales(df_quarterly):
+        """Predicts the sales next quarter from the given dataset."""
+        prediction_X_quarterly = df_quarterly[
+            PredictionServiceQuarterly.quarterly_X_cols
+        ]
+
+        quarterly_predictions = PredictionServiceQuarterly.quarterly_pred_model.predict(
+            prediction_X_quarterly
+        )
+
+        total_quarterly_prediction = quarterly_predictions.sum()
+
+        return total_quarterly_prediction
+
     @staticmethod
     def engineer_features(df_timeframes):
         df_quarterly = df_timeframes.copy().drop(columns=["Year-Month", "Year-Week"])

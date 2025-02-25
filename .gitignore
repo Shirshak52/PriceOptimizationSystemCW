@@ -13,6 +13,7 @@ instance/
 # Specific to this project
 pwhash.py
 uploads/
+temp/
 
 # Virtual environment
 venv/

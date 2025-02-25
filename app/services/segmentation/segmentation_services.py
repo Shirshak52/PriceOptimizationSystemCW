@@ -76,17 +76,20 @@ class SegmentationService:
     @staticmethod
     def get_optimal_num_of_clusters(df_clustering):
         """Returns the number of clusters with the highest silhouette score."""
-        cluster_range = range(2, 11)
-        silhouette_scores = []
+        try:
+            cluster_range = range(2, 11)
+            silhouette_scores = []
 
-        for k in cluster_range:
-            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-            kmeans.fit(df_clustering)
-            labels = kmeans.labels_
-            silhouette_avg = silhouette_score(df_clustering, labels)
-            silhouette_scores.append(silhouette_avg)
+            for k in cluster_range:
+                kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+                kmeans.fit(df_clustering)
+                labels = kmeans.labels_
+                silhouette_avg = silhouette_score(df_clustering, labels)
+                silhouette_scores.append(silhouette_avg)
 
-        return cluster_range[np.argmax(silhouette_scores)]
+            return cluster_range[np.argmax(silhouette_scores)]
+        except Exception as e:
+            print(f"Error: {str(e)}")
 
     @staticmethod
     def scale_dataset(df):

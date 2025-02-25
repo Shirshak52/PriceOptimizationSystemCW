@@ -1,13 +1,15 @@
-from flask import Flask, session
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_session import Session as FlaskSession
 from app.config import Config
 
 # Initialize addon instances
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+flask_session = FlaskSession()
 
 
 def create_app():
@@ -19,6 +21,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    flask_session.init_app(app)
 
     # Within the app context
     with app.app_context():

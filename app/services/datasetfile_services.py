@@ -6,7 +6,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-from flask import current_app, session
+from flask import current_app, jsonify, session
 from flask_login import current_user
 from app import db
 from app.models.DatasetFile.model import DatasetFile
@@ -38,46 +38,51 @@ class DatasetFileService:
         try:
             # Convert the file into a DataFrame
             df = DatasetFileService.convert_to_df(file)
-            df = df[DatasetFileService.required_cols]
 
-            # Set the correct folder
-            folder = DatasetFileService.set_correct_folder(ml_process)
+            if df is not None:
+                df = df[DatasetFileService.required_cols]
 
-            # Preprocess the dataset
-            df_preprocessed = DatasetFileService.preprocess_dataset(df, ml_process)
+                # Set the correct folder
+                folder = DatasetFileService.set_correct_folder(ml_process)
 
-            # Generate a unique filename
-            unique_filename = DatasetFileService.generate_unique_filename(file)
+                # Preprocess the dataset
+                df_preprocessed = DatasetFileService.preprocess_dataset(df, ml_process)
 
-            # Create the full file path
-            file_path = os.path.join(folder, os.path.basename(unique_filename))
+                # Generate a unique filename
+                unique_filename = DatasetFileService.generate_unique_filename(file)
 
-            # Set the file path into the session
-            session["dataset_file_path"] = file_path
+                # Create the full file path
+                file_path = os.path.join(folder, os.path.basename(unique_filename))
 
-            # Convert the file into a CSV string
-            df_csv_string = DatasetFileService.convert_to_csv(df_preprocessed)
+                # Set the file path into the session
+                session["dataset_file_path"] = file_path
 
-            # Save the CSV content to the file
-            with open(file_path, "wb") as f:
-                f.write(df_csv_string.getvalue())
+                # Convert the file into a CSV string
+                df_csv_string = DatasetFileService.convert_to_csv(df_preprocessed)
 
-            # Save the metadata to the database
-            metadata = DatasetFile(
-                file_path=file_path,
-                upload_datetime=datetime.utcnow(),
-                branch_id=current_user.id,
-            )
+                # Save the CSV content to the file
+                with open(file_path, "wb") as f:
+                    f.write(df_csv_string.getvalue())
 
-            # Add to the db and commit
-            db.session.add(metadata)
-            db.session.commit()
-            dataset_file_id = metadata.id
+                # Save the metadata to the database
+                metadata = DatasetFile(
+                    file_path=file_path,
+                    upload_datetime=datetime.utcnow(),
+                    branch_id=current_user.id,
+                )
 
-            return (
-                True,
-                dataset_file_id,
-            )  # Return True and the dataset file id if all operations are successful
+                # Add to the db and commit
+                db.session.add(metadata)
+                db.session.commit()
+                dataset_file_id = metadata.id
+
+                return (
+                    True,
+                    dataset_file_id,
+                )  # Return True and the dataset file id if all operations are successful
+
+            else:
+                return False, None
 
         except Exception as e:
             print(f"Error while saving dataset file: {e}")
@@ -95,6 +100,7 @@ class DatasetFileService:
     def preprocess_dataset(df, ml_process):
         """Cleans the dataset, engineers features, and scales the dataset."""
         df_cleaned = DatasetFileService.clean_dataset(df)
+
         df_engineered = DatasetFileService.engineer_features(df_cleaned, ml_process)
 
         df_preprocessed = df_engineered.copy()
@@ -183,16 +189,13 @@ class DatasetFileService:
         if file.filename.endswith((".xls", ".xlsx")):
             df = pd.read_excel(file)
 
-        # JSON
-        elif file.filename.endswith(".json"):
-            df = pd.read_json(file)
-
         # CSV
         elif file.filename.endswith(".csv"):
             df = pd.read_csv(file, encoding="utf-8")
 
         else:
             print("Not a valid file format.")
+            return None
 
         return df
 
@@ -201,15 +204,20 @@ class DatasetFileService:
         """Validates the user-uploaded dataset."""
         df = DatasetFileService.convert_to_df(file)
 
-        # Check first for missing columns
-        if DatasetFileService.has_missing_cols(df):
-            return False
+        # Check if it is a valid file format
+        if df is None:
+            return False, "Invalid file format."
 
-        # Check if all columns have correct datatype
-        if not DatasetFileService.has_correct_dtypes(df):
-            return False
+        else:
+            # Check first for missing columns
+            if DatasetFileService.has_missing_cols(df):
+                return False, "Missing columns."
 
-        return True
+            # Check if all columns have correct datatype
+            if not DatasetFileService.has_correct_dtypes(df):
+                return False, "Incorrect datatypes."
+
+        return True, "Valid dataset."
 
     @staticmethod
     def has_missing_cols(df):

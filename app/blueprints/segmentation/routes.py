@@ -50,8 +50,12 @@ def upload_segmentation_dataset_file():
             # Retrieve the file
             file = form.file.data
 
+            is_valid_file, validation_message = DatasetFileService.validate_datasetfile(
+                file
+            )
+
             # Validate and save the file
-            if DatasetFileService.validate_datasetfile(file):
+            if is_valid_file:
                 file_is_saved, dataset_file_id = DatasetFileService.save_datasetfile(
                     file, "segmentation"
                 )
@@ -60,7 +64,7 @@ def upload_segmentation_dataset_file():
 
             else:
                 flash(
-                    "Upload unsuccessful. Ensure that all mentioned columns exist and that their datatypes are appropriate.",
+                    validation_message,
                     "error",
                 )
 

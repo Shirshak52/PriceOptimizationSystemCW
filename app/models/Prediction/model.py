@@ -16,14 +16,10 @@ class Prediction(db.Model):
         default=uuid.uuid4,
     )
 
-    # Product ID
-    product_id = db.Column(db.String(50), nullable=False)
-
-    # Predicted sales amount
-    predicted_sales = db.Column(db.Float, nullable=False)
-
-    # Timeframe (Weekly/Monthly)
-    timeframe = db.Column(db.Enum("Weekly", "Monthly", name="timeframes"))
+    # Predicted sales amounts
+    sales_next_week = db.Column(db.Float, nullable=False)
+    sales_next_month = db.Column(db.Float, nullable=False)
+    sales_next_quarter = db.Column(db.Float, nullable=False)
 
     # Dataset file ID (Foreign key)
     dataset_file_id = db.Column(

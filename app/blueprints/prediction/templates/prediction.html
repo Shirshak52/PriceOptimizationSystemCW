@@ -14,8 +14,12 @@
     class="w-full border-white flex justify-center items-center bg-fyp-secondary-100 p-8 m-4"
 >
     <!-- File upload input field -->
-    {% from "macros/prediction_file_upload_macro.html" import file_upload %}
-    {{file_upload(form=file_upload_form)}}
+    <div
+        class="px-6 border-white flex flex-col items-center justify-center w-full"
+    >
+        {% from "macros/prediction_file_upload_macro.html" import file_upload %}
+        {{file_upload(form=file_upload_form)}}
+    </div>
 
     <!-- Prediction chart macro -->
     {% from "macros/prediction_chart_macro.html" import prediction_chart %}

@@ -1,4 +1,40 @@
+import os
+from flask import current_app
+from joblib import load
+
+
 class PredictionServiceMonthly:
+
+    model_dir = current_app.config["MODELS_FOLDER_PREDICTION"]
+    monthly_pred_model = load(os.path.join(model_dir, "xgboost_monthly.joblib"))
+
+    monthly_X_cols = [
+        "Price This Month",
+        "Price Last Month",
+        # "Sales This Month",
+        # "Sales Last Month",
+        # "Quantity This Month",
+        # "Quantity Last Month",
+        "Price Change (%)",
+        # "Sales Growth Rate",
+        # "Stock to Sales Ratio",
+        # "Momentum",
+        # "Rolling Average Sales",
+        # "Price-to-Sales Ratio",
+    ]
+
+    @staticmethod
+    def predict_monthly_sales(df_monthly):
+        """Predicts the sales next month from the given dataset."""
+        prediction_X_monthly = df_monthly[PredictionServiceMonthly.monthly_X_cols]
+
+        monthly_predictions = PredictionServiceMonthly.monthly_pred_model.predict(
+            prediction_X_monthly
+        )
+
+        total_monthly_prediction = monthly_predictions.sum()
+
+        return total_monthly_prediction
 
     @staticmethod
     def engineer_features(df_timeframes):

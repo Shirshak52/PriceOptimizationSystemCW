@@ -22,6 +22,16 @@ class Config:
     UPLOAD_FOLDER_SEGMENTATION = environ.get("UPLOAD_FOLDER_SEGMENTATION")
     MAX_CONTENT_LENGTH = int(environ.get("MAX_CONTENT_LENGTH"))
 
+    # ML processing-related config values
+    MODELS_FOLDER_PREDICTION = path.abspath(
+        path.join(basedir, environ.get("MODELS_FOLDER_PREDICTION"))
+    )
+
+    # Flask-session config values
+    SESSION_TYPE = environ.get("SESSION_TYPE")
+    SESSION_FILE_DIR = environ.get("SESSION_FILE_DIR")
+    SESSION_PERMANENT = environ.get("SESSION_PERMANENT")
+
     # Database config values
     SQLALCHEMY_DATABASE_URI = environ.get("SQLALCHEMY_DATABASE_URI")
     SQLALCHEMY_ECHO = environ.get("SQLALCHEMY_ECHO")

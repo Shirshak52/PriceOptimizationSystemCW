@@ -1,14 +1,15 @@
-from flask import jsonify, redirect, render_template, url_for, flash, session
+from flask import jsonify, render_template, session
 from flask_login import login_required
+import pandas as pd
 from werkzeug.exceptions import RequestEntityTooLarge
 
 from app.forms.file_upload_form import FileUploadForm
 
 from app.services.datasetfile_services import DatasetFileService
 
-# from app.services.segmentation_services import SegmentationService
 
 from app.blueprints.prediction import prediction_bp
+from app.services.prediction.prediction_services import PredictionService
 
 
 @prediction_bp.route("/", methods=["GET"])
@@ -34,120 +35,152 @@ def upload_prediction_dataset_file():
     # File-uploading form
     form = FileUploadForm()
 
+    session.pop("_flashes", None)
+
     if form.validate_on_submit():
         print("FORM VALIDATION PASSED")
         try:
             # Retrieve the file
             file = form.file.data
 
+            is_valid_file, validation_message = DatasetFileService.validate_datasetfile(
+                file
+            )
+
             # Validate and save the file
-            if DatasetFileService.validate_datasetfile(file):
+            if is_valid_file:
                 file_is_saved, dataset_file_id = DatasetFileService.save_datasetfile(
                     file, "prediction"
                 )
                 session["file_uploaded"] = file_is_saved
                 session["dataset_file_id"] = dataset_file_id
 
+                # print(f"File saved successfully, file id: {dataset_file_id}")
+
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": "Successfully uploaded prediction file.",
+                    }
+                )
+
             else:
-                flash(
-                    "Upload unsuccessful. Ensure that all mentioned columns exist and that their datatypes are appropriate.",
-                    "error",
+                print(f"File save failed: {validation_message}")
+                return jsonify(
+                    {
+                        "success": False,
+                        "message": validation_message,
+                    }
                 )
 
         except RequestEntityTooLarge:
-            flash("The file is too large. Please upload a smaller file.", "error")
+            print("File too large")
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Prediction file too large.",
+                }
+            )
 
     else:
-        print("FORM VAL FAILED", form.errors)
-
-    return redirect(url_for("pred.prediction_dashboard"))
-
-
-# @prediction_bp.route("/change_file", methods=["POST"])
-# @login_required
-# def change_dataset_file():
-#     """Redirects user back to the file-uploading form."""
-#     session["file_uploaded"] = False
-#     return redirect(url_for("pred.prediction_dashboard"))
+        print("Form val failed")
+        return jsonify(
+            {
+                "success": False,
+                "message": "Form validation failed.",
+            }
+        )
 
 
-# @segmentation_bp.route("/cluster_customers", methods=["POST"])
-# @login_required
-# def cluster_customers():
-#     """Takes input from Segmentation Parameters form and returns cluster counts after segmentation."""
+@prediction_bp.route("/predict_sales", methods=["GET"])
+@login_required
+def predict_sales():
+    try:
+        df_weekly = pd.DataFrame(session.get("prediction_df_weekly"))
+        df_monthly = pd.DataFrame(session.get("prediction_df_monthly"))
+        df_quarterly = pd.DataFrame(session.get("prediction_df_quarterly"))
 
-#     # Form to input number of clusters and clustering metric
-#     form = SegmentationParametersForm()
+        prediction_weekly, prediction_monthly, prediction_quarterly = (
+            PredictionService.predict_sales(df_weekly, df_monthly, df_quarterly)
+        )
 
-#     if form.validate_on_submit():
-#         print("segm form passedd")
+        # Set the predictions in the session
+        session["prediction_weekly"] = float(prediction_weekly)
+        session["prediction_monthly"] = float(prediction_monthly)
+        session["prediction_quarterly"] = float(prediction_quarterly)
 
-#         # Get the dataset inside the submitted file
-#         df = DatasetFileService.get_session_dataframe()
-
-#         # Retrieve number of clusters and clustering metric from the form
-#         num_of_clusters = form.number_choice.data
-#         chosen_metric = form.metric.data
-#         session["chosen_metric"] = (
-#             chosen_metric  # Set the chosen metric into the session
-#         )
-
-#         # Cluster the dataset and set cluster counts in the session
-#         cluster_counts, metric_averages = SegmentationService.segment_customers(
-#             df, num_of_clusters, chosen_metric
-#         )
-#         session["cluster_counts"] = cluster_counts
-#         session["metric_averages"] = metric_averages
-#         return jsonify({"success": True})
-#     else:
-#         print("segm form not passedd", form.errors)
-#         return jsonify({"success": False}), 400
-
-
-# @segmentation_bp.route("/get_cluster_profiles", methods=["GET"])
-# @login_required
-# def get_cluster_profiles():
-#     """Returns the chosen metric, cluster counts, and metric averages stored in the session."""
-
-#     # Get the chosen metric, cluster counts, and metric averages from the session
-#     chosen_metric = session.get("chosen_metric", "Metric not chosen")
-#     cluster_counts = session.get("cluster_counts", {})
-#     metric_averages = session.get("metric_averages", {})
-
-#     total_customers = sum(cluster_counts.values())
-#     cluster_percentages = {
-#         cluster: (count / total_customers * 100) if total_customers > 0 else 0
-#         for cluster, count in cluster_counts.items()
-#     }
-#     return jsonify(
-#         {
-#             "cluster_counts": cluster_counts,
-#             "metric_averages": metric_averages,
-#             "cluster_percentages": cluster_percentages,
-#             "chosen_metric": chosen_metric,
-#         }
-#     )
+        if not all(
+            k in session
+            for k in [
+                "prediction_weekly",
+                "prediction_monthly",
+                "prediction_quarterly",
+            ]
+        ):
+            print("Prediction data unavailable")
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Prediction data not available.",
+                }
+            )
+        print(
+            f"Succesfully predicted sales, predictions: {prediction_weekly, prediction_monthly, prediction_quarterly}"
+        )
+        return jsonify({"success": True, "message": "Successfully predicted sales."})
+    except Exception as e:
+        print("Error during prediction")
+        return jsonify(
+            {"success": False, "message": f"Error during prediction: {str(e)}"}
+        )
 
 
-# @segmentation_bp.route("save_to_db", methods=["POST"])
-# @login_required
-# def save_to_db():
-#     # Get the dataset file ID, chosen metric, cluster counts, and metric averages
-#     dataset_file_id = session.get("dataset_file_id")
-#     chosen_metric = session.get("chosen_metric", "Metric not chosen")
-#     cluster_counts = session.get("cluster_counts", {})
-#     metric_averages = session.get("metric_averages", {})
+@prediction_bp.route("/get_predictions", methods=["GET"])
+@login_required
+def get_predictions():
+    prediction_weekly = session.get("prediction_weekly")
+    prediction_monthly = session.get("prediction_monthly")
+    prediction_quarterly = session.get("prediction_quarterly")
+    print(f"predictions: {prediction_weekly,prediction_monthly,prediction_quarterly}")
 
-#     try:
-#         # Save the data to the database
-#         SegmentationService.save_to_db(
-#             dataset_file_id, chosen_metric, cluster_counts, metric_averages
-#         )
+    if (
+        prediction_weekly is None
+        or prediction_monthly is None
+        or prediction_quarterly is None
+    ):
+        print("Predictions not yet available")
+        return jsonify({"success": False, "message": "Predictions not yet available."})
 
-#         # Return a success response
-#         print("Segmentation report saved successfully!")
-#         return jsonify({"message": "Segmentation report saved successfully!"}), 200
+    return jsonify(
+        {
+            "prediction_weekly": prediction_weekly,
+            "prediction_monthly": prediction_monthly,
+            "prediction_quarterly": prediction_quarterly,
+        }
+    )
 
-#     except Exception as e:
-#         print("Error:", e)
-#         return jsonify({"Error": str(e)}), 500
+
+@prediction_bp.route("save_to_db", methods=["POST"])
+@login_required
+def save_prediction_to_db():
+    # Get the dataset file ID, chosen metric, cluster counts, and metric averages
+    dataset_file_id = session.get("dataset_file_id")
+    prediction_weekly = session.get("prediction_weekly")
+    prediction_monthly = session.get("prediction_monthly")
+    prediction_quarterly = session.get("prediction_quarterly")
+
+    try:
+        # Save the data to the database
+        PredictionService.save_to_db(
+            dataset_file_id, prediction_weekly, prediction_monthly, prediction_quarterly
+        )
+
+        # Return a success response
+        print("Prediction report saved successfully!")
+        return jsonify(
+            {"success": True, "message": "Prediction report saved successfully!"}
+        )
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"success": False, "message": str(e)})

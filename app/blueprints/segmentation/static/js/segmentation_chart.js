@@ -9,7 +9,23 @@ const downloadButton = document.getElementById(
 const context = chartCanvas.getContext("2d");
 
 // Define color palette
-const COLORS = ["#EF582E", "#00A878", "#00A1E4", "#F4D35E", "#BC63F8"];
+const COLORS = [
+    "#16CA1F",
+    "#097248",
+    "#007A25",
+    "#0E99A3",
+    "#1D5B79",
+    "#4059AD",
+    "#613DC1",
+    "#9D0191",
+    "#D90429",
+    "#F3722C",
+    "#FFBA08",
+    "#97CC04",
+    "#7C3E66",
+    "#582F0E",
+    "#5A5A66",
+];
 
 // Initialize the chart
 const clusterChart = new Chart(context, {

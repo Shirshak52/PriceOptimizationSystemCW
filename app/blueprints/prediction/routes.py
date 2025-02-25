@@ -52,7 +52,7 @@ def upload_prediction_dataset_file():
                 file_is_saved, dataset_file_id = DatasetFileService.save_datasetfile(
                     file, "prediction"
                 )
-                session["file_uploaded"] = file_is_saved
+                session["prediction_file_uploaded"] = file_is_saved
                 session["dataset_file_id"] = dataset_file_id
 
                 # print(f"File saved successfully, file id: {dataset_file_id}")

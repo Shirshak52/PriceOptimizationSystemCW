@@ -10,16 +10,16 @@ class PredictionServiceMonthly:
 
     monthly_X_cols = [
         "Price This Month",
-        "Price Last Month",
+        # "Price Last Month",
         # "Sales This Month",
         # "Sales Last Month",
         # "Quantity This Month",
         # "Quantity Last Month",
         "Price Change (%)",
         # "Sales Growth Rate",
-        # "Stock to Sales Ratio",
+        "Stock to Sales Ratio",
         # "Momentum",
-        # "Rolling Average Sales",
+        "Rolling Average Sales",
         # "Price-to-Sales Ratio",
     ]
 
@@ -32,7 +32,19 @@ class PredictionServiceMonthly:
             prediction_X_monthly
         )
 
-        total_monthly_prediction = monthly_predictions.sum()
+        df_monthly_predictions = df_monthly.copy()
+        df_monthly_predictions["Predictions"] = monthly_predictions
+
+        # Sort by Product ID (ascending) and Year-Month (descending)
+        df_monthly_predictions = df_monthly_predictions.sort_values(
+            by=["Product ID", "Year-Month"], ascending=[True, False]
+        )
+
+        latest_monthly_predictions = df_monthly_predictions.groupby("Product ID")[
+            "Predictions"
+        ].first()
+
+        total_monthly_prediction = latest_monthly_predictions.sum()
 
         return total_monthly_prediction
 

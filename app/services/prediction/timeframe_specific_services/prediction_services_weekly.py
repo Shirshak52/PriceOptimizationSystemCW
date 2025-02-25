@@ -10,14 +10,14 @@ class PredictionServiceWeekly:
 
     weekly_X_cols = [
         "Price This Week",
-        "Price Last Week",
+        # "Price Last Week",
         # "Sales This Week",
         # "Sales Last Week",
         # "Quantity This Week",
         # "Quantity Last Week",
-        # "Price Change (%)",
+        "Price Change (%)",
         # "Sales Growth Rate",
-        # "Stock to Sales Ratio",
+        "Stock to Sales Ratio",
         # "Momentum",
         "Rolling Average Sales",
         # "Price-to-Sales Ratio",
@@ -26,15 +26,33 @@ class PredictionServiceWeekly:
     @staticmethod
     def predict_weekly_sales(df_weekly):
         """Predicts the sales next week from the given dataset."""
-        prediction_X_weekly = df_weekly[PredictionServiceWeekly.weekly_X_cols]
+        try:
+            prediction_X_weekly = df_weekly[PredictionServiceWeekly.weekly_X_cols]
 
-        weekly_predictions = PredictionServiceWeekly.weekly_pred_model.predict(
-            prediction_X_weekly
-        )
+            weekly_predictions = PredictionServiceWeekly.weekly_pred_model.predict(
+                prediction_X_weekly
+            )
 
-        total_weekly_prediction = weekly_predictions.sum()
+            df_weekly_predictions = df_weekly.copy()
+            print(f"length of df_weekly_predictions: {df_weekly_predictions.shape[0]}")
+            print(f"length of weekly_predictions: {weekly_predictions.shape[0]}")
 
-        return total_weekly_prediction
+            df_weekly_predictions["Predictions"] = weekly_predictions
+
+            # Sort by Product ID (ascending) and Year-Week (descending)
+            df_weekly_predictions = df_weekly_predictions.sort_values(
+                by=["Product ID", "Year-Week"], ascending=[True, False]
+            )
+
+            latest_weekly_predictions = df_weekly_predictions.groupby("Product ID")[
+                "Predictions"
+            ].first()
+
+            total_weekly_prediction = latest_weekly_predictions.sum()
+
+            return total_weekly_prediction
+        except Exception as e:
+            print(f"Error in wkly pred: {str(e)}")
 
     @staticmethod
     def engineer_features(df_timeframes):

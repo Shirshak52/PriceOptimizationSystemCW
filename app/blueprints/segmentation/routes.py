@@ -23,7 +23,9 @@ def segmentation_dashboard():
 
     # Form to input number of clusters and clustering metric
     segmentation_parameters_form = (
-        SegmentationParametersForm() if session.get("file_uploaded") else None
+        SegmentationParametersForm()
+        if session.get("segmentation_file_uploaded")
+        else None
     )
 
     # Render segmentation.html with the 2 forms
@@ -32,7 +34,7 @@ def segmentation_dashboard():
         file_upload_form=file_upload_form,
         segmentation_parameters_form=segmentation_parameters_form,
         # Boolean that shows only one of the forms
-        file_uploaded=session.get("file_uploaded"),
+        segmentation_file_uploaded=session.get("segmentation_file_uploaded"),
     )
 
 
@@ -59,7 +61,7 @@ def upload_segmentation_dataset_file():
                 file_is_saved, dataset_file_id = DatasetFileService.save_datasetfile(
                     file, "segmentation"
                 )
-                session["file_uploaded"] = file_is_saved
+                session["segmentation_file_uploaded"] = file_is_saved
                 session["dataset_file_id"] = dataset_file_id
 
             else:
@@ -81,7 +83,7 @@ def upload_segmentation_dataset_file():
 @login_required
 def change_segmentation_dataset_file():
     """Redirects user back to the file-uploading form."""
-    session["file_uploaded"] = False
+    session["segmentation_file_uploaded"] = False
     return redirect(url_for("segm.segmentation_dashboard"))
 
 

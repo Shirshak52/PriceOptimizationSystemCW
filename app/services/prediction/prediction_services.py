@@ -77,21 +77,15 @@ class PredictionService:
         df_monthly = PredictionServiceMonthly.engineer_features(df_timeframes)
         df_quarterly = PredictionServiceQuarterly.engineer_features(df_timeframes)
 
-        # Drop Product ID
-        df_weekly = df_weekly.drop(columns=["Product ID"])
-        df_monthly = df_monthly.drop(columns=["Product ID"])
-        df_quarterly = df_quarterly.drop(columns=["Product ID"])
+        # # Drop Product ID
+        # df_weekly = df_weekly.drop(columns=["Product ID"])
+        # df_monthly = df_monthly.drop(columns=["Product ID"])
+        # df_quarterly = df_quarterly.drop(columns=["Product ID"])
 
         # Save the dataframes to the session
-        session["prediction_df_weekly"] = (
-            df_weekly.copy().drop(columns={"Year-Week"}).to_dict()
-        )
-        session["prediction_df_monthly"] = (
-            df_monthly.copy().drop(columns={"Year-Month"}).to_dict()
-        )
-        session["prediction_df_quarterly"] = (
-            df_quarterly.copy().drop(columns={"Year-Quarter"}).to_dict()
-        )
+        session["prediction_df_weekly"] = df_weekly.copy().to_dict()
+        session["prediction_df_monthly"] = df_monthly.copy().to_dict()
+        session["prediction_df_quarterly"] = df_quarterly.copy().to_dict()
 
         # Vertically concatenate the datasets
         df_combined = pd.concat(

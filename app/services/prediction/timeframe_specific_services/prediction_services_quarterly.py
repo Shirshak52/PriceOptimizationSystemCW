@@ -9,13 +9,13 @@ class PredictionServiceQuarterly:
     quarterly_pred_model = load(os.path.join(model_dir, "xgboost_quarterly.joblib"))
 
     quarterly_X_cols = [
-        # "Price This Quarter",
-        "Price Last Quarter",
+        "Price This Quarter",
+        # "Price Last Quarter",
         # "Sales This Quarter",
         # "Sales Last Quarter",
         # "Quantity This Quarter",
         # "Quantity Last Quarter",
-        # "Price Change (%)",
+        "Price Change (%)",
         # "Sales Growth Rate",
         "Stock to Sales Ratio",
         # "Momentum",
@@ -34,7 +34,19 @@ class PredictionServiceQuarterly:
             prediction_X_quarterly
         )
 
-        total_quarterly_prediction = quarterly_predictions.sum()
+        df_quarterly_predictions = df_quarterly.copy()
+        df_quarterly_predictions["Predictions"] = quarterly_predictions
+
+        # Sort by Product ID (ascending) and Year-Quarter (descending)
+        df_quarterly_predictions = df_quarterly_predictions.sort_values(
+            by=["Product ID", "Year-Quarter"], ascending=[True, False]
+        )
+
+        latest_quarterly_predictions = df_quarterly_predictions.groupby("Product ID")[
+            "Predictions"
+        ].first()
+
+        total_quarterly_prediction = latest_quarterly_predictions.sum()
 
         return total_quarterly_prediction
 

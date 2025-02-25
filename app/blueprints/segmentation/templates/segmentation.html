@@ -15,7 +15,7 @@
 >
     <!-- File upload input field -->
     <!-- If file not uploaded, show upload form -->
-    {% if not file_uploaded %} {% from
+    {% if not segmentation_file_uploaded %} {% from
     "macros/segmentation_file_upload_macro.html" import file_upload %}
     {{file_upload(form=file_upload_form)}}
 

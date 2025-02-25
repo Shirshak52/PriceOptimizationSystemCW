@@ -1,0 +1,32 @@
+{% extends "baselayout.html" %}
+<!-- Page title -->
+{% block title %}Optimize Prices - OptiPrice{% endblock %} {% block content %}
+
+<!-- Page content -->
+<!-- Page header -->
+<h1
+    class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-center text-black md:text-5xl lg:text-6xl dark:text-white"
+>
+    Optimize your
+    <span class="text-fyp-tertiary-100">Prices</span>
+</h1>
+<div
+    class="w-full border-white flex justify-center items-center bg-fyp-secondary-100 p-8 m-4"
+>
+    <!-- File upload input field -->
+    <div
+        class="px-6 border-white flex flex-col items-center justify-center w-full"
+    >
+        {% from "macros/optimization_file_upload_macro.html" import file_upload
+        %} {{file_upload(form=file_upload_form)}}
+    </div>
+
+    <!-- Optimization chart macro -->
+    {% from "macros/optimization_predicted_sales_chart_macro.html" import
+    optimization_predicted_sales_chart %}
+    {{optimization_predicted_sales_chart()}}
+</div>
+
+<script src="{{ url_for('opt.static', filename='js/optimization_chart.js') }}"></script>
+
+{% endblock %}

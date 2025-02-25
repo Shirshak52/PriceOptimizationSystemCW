@@ -1,0 +1,74 @@
+{% macro file_upload(form) %}
+<!-- Form for file upload -->
+<p
+    class="w-full border-b pb-4 border-white mb-2 text-lg font-normal text-center text-white"
+>
+    Upload your dataset file here. <br />
+    <span class="w-full border-white text-sm text-left text-fyp-tertiary-100">
+        Make sure you include these columns:
+        <br />
+        Product ID, Customer ID, Order Date, Price, Quantity, Sales
+    </span>
+</p>
+<div class="mt-2 border-white w-full max-w-xl">
+    <form
+        id="optimization-file-upload-form"
+        class="flex flex-col items-center justify-center w-full"
+        enctype="multipart/form-data"
+    >
+        {{ form.hidden_tag() }}
+        <!-- CSRF protection -->
+
+        <div class="flex flex-col justify-center w-full max-w-sm">
+            <label
+                class="block mb-2 text-sm font-medium text-white dark:text-white"
+                for="file_input"
+            >
+                {{form.file.label}}
+            </label>
+
+            <!-- File upload field -->
+            {{ form.file(class="block w-full text-sm text-black border
+            border-gray-300 rounded-lg cursor-pointer bg-gray-50
+            dark:text-gray-400 focus:ring-2 focus:outline-none
+            focus:ring-fyp-primary-100 dark:bg-gray-700 dark:border-gray-600
+            dark:placeholder-gray-400") }}
+
+            <!-- Form error messages -->
+            {% if form.file.errors %}
+            <div
+                class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert"
+            >
+                <!-- Display each message -->
+                {% for error in form.file.errors %}
+                <span class="font-medium">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Other error messages -->
+            <div
+                id="optimization-file-upload-form-errors"
+                class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert"
+            ></div>
+
+            <p
+                class="mt-1 text-sm text-white dark:text-gray-300"
+                id="file_input_help"
+            >
+                CSV or XLSX only
+            </p>
+        </div>
+
+        <!-- Submit button -->
+        <div class="mt-4">
+            {{ form.submit(class="text-white bg-fyp-tertiary-100
+            hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none
+            focus:ring-fyp-primary-100 font-medium rounded-md text-sm px-5
+            py-2.5 text-center") }}
+        </div>
+    </form>
+</div>
+{% endmacro %}

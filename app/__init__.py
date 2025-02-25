@@ -31,6 +31,8 @@ def create_app():
         from app.models.Branch.model import Branch
         from app.models.DatasetFile.model import DatasetFile
         from app.models.Optimization.model import Optimization
+        from app.models.OptimizedPrices.model import OptimizedPrices
+        from app.models.OptimizedSales.model import OptimizedSales
         from app.models.Prediction.model import Prediction
         from app.models.Segmentation.model import Segmentation
         from app.models.Cluster.model import Cluster
@@ -40,17 +42,20 @@ def create_app():
         # Import routes
         from app.blueprints.main import routes
         from app.blueprints.auth import routes
+        from app.blueprints.optimization import routes
         from app.blueprints.prediction import routes
         from app.blueprints.segmentation import routes
 
         # Register blueprints
         from app.blueprints.main import main_bp
         from app.blueprints.auth import auth_bp
+        from app.blueprints.optimization import optimization_bp
         from app.blueprints.prediction import prediction_bp
         from app.blueprints.segmentation import segmentation_bp
 
         app.register_blueprint(main_bp)
         app.register_blueprint(auth_bp)
+        app.register_blueprint(optimization_bp)
         app.register_blueprint(prediction_bp)
         app.register_blueprint(segmentation_bp)
 

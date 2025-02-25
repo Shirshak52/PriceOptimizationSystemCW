@@ -142,6 +142,15 @@ class DatasetFileService:
 
             df_engineered = PredictionService.engineer_features(df)
             return df_engineered
+        # Optimization
+        elif ml_process == "optimization":
+            from app.services.optimization.optimization_services import (
+                OptimizationService,
+            )
+
+            df_engineered = OptimizationService.engineer_features(df)
+            return df_engineered
+
         else:
             raise ValueError(f"Unsupported ML process {ml_process}")
 

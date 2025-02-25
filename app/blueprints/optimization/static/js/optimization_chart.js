@@ -1,7 +1,5 @@
 // Get the DOM elements
-const predictedSalesChartCanvas = document.getElementById(
-    "optimization_predicted_sales_chart"
-);
+const salesChartCanvas = document.getElementById("optimization_sales_chart");
 const form = document.getElementById("optimization-file-upload-form");
 const formErrors = document.getElementById(
     "optimization-file-upload-form-errors"
@@ -13,20 +11,27 @@ const downloadButton = document.getElementById(
 formErrors.style.display = "none";
 
 // Get chart context
-const context = predictedSalesChartCanvas.getContext("2d");
+const context = salesChartCanvas.getContext("2d");
 
 // Define color palette
 const COLORS = ["#16CA1F", "#34D399", "#60A5FA "];
 
 // Initialize the chart
-const predictionChart = new Chart(context, {
+const salesChart = new Chart(context, {
     type: "bar", // Type of chart
     data: {
         labels: [], // Will be populated with prediction labels
         datasets: [
             {
                 label: "Predicted Sales with Current Prices",
-                data: [], // Will be populated with weekly prediction value
+                data: [], // Will be populated with predicted sales
+                backgroundColor: COLORS,
+                borderColor: "#202020",
+                borderWidth: 1,
+            },
+            {
+                label: "Predicted Sales with Optimized Prices",
+                data: [], // Will be populated with optimized sales
                 backgroundColor: COLORS,
                 borderColor: "#202020",
                 borderWidth: 1,
@@ -66,7 +71,7 @@ const predictionChart = new Chart(context, {
         },
         plugins: {
             legend: {
-                display: false,
+                display: true,
             },
             title: {
                 display: true,
@@ -108,24 +113,79 @@ async function fetchPredictions() {
                 "Next Month",
                 "Next Quarter",
             ];
-            predictionChart.data.labels = predictionLabels;
+            salesChart.data.labels = predictionLabels;
 
             // Set the data values from the fetched predictions
-            predictionChart.data.datasets[0].data = [
+            salesChart.data.datasets[0].data = [
                 data.prediction_weekly || 0,
                 data.prediction_monthly || 0,
                 data.prediction_quarterly || 0,
             ];
 
             // Update the chart
-            predictionChart.update("resize");
+            salesChart.update("resize");
 
             // Stop the polling for predictions and reset the polling ID
             clearInterval(pollingInterval);
             pollingInterval = null;
+
+            await triggerOptimization();
         }
     } catch (error) {
         console.error("Error fetching predictions:", error);
+    }
+}
+
+async function triggerOptimization() {
+    try {
+        const response = await fetch("optimize_prices");
+
+        const data = await response.json();
+
+        if (data.success) {
+            console.log("Optimization process triggered successfully.");
+            pollingInterval = setInterval(fetchOptimizations, 3000);
+        } else {
+            console.error("Failed to trigger optimization", data.message);
+        }
+    } catch (error) {
+        console.error("Error triggering optimization:", error);
+    }
+}
+
+async function fetchOptimizations() {
+    try {
+        const response = await fetch("get_optimizations");
+        const data = await response.json();
+
+        // If the response is valid, update the chart
+        if (
+            data?.optimized_sales &&
+            data?.optimized_prices &&
+            data?.current_prices
+        ) {
+            const predictionLabels = [
+                "Next Week",
+                "Next Month",
+                "Next Quarter",
+            ];
+
+            // Set the labels for each optimized sales value
+
+            salesChart.data.labels = predictionLabels;
+
+            salesChart.data.datasets[1].data = data.optimized_sales || [
+                0, 0, 0,
+            ];
+        }
+
+        salesChart.update("resize");
+
+        // Stop the polling for optimization data and reset the polling interval ID
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+    } catch (error) {
+        console.error("Error fetching optimizations:", error);
     }
 }
 

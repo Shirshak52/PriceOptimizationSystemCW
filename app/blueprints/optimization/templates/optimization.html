@@ -22,9 +22,8 @@
     </div>
 
     <!-- Optimization chart macro -->
-    {% from "macros/optimization_predicted_sales_chart_macro.html" import
-    optimization_predicted_sales_chart %}
-    {{optimization_predicted_sales_chart()}}
+    {% from "macros/optimization_sales_chart_macro.html" import
+    optimization_sales_chart %} {{optimization_sales_chart()}}
 </div>
 
 <script src="{{ url_for('opt.static', filename='js/optimization_chart.js') }}"></script>

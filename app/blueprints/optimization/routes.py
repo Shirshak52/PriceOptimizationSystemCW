@@ -55,6 +55,11 @@ def upload_prediction_dataset_file():
                 session["optimization_file_uploaded"] = file_is_saved
                 session["dataset_file_id"] = dataset_file_id
 
+                optimization_df_original = OptimizationService.get_original_dataset(
+                    file
+                )
+                session["optimization_df_original"] = optimization_df_original
+
                 # print(f"File saved successfully, file id: {dataset_file_id}")
 
                 return jsonify(
@@ -167,9 +172,12 @@ def optimize_prices():
         df_weekly = pd.DataFrame(session.get("prediction_df_weekly"))
         df_monthly = pd.DataFrame(session.get("prediction_df_monthly"))
         df_quarterly = pd.DataFrame(session.get("prediction_df_quarterly"))
+        df_original = pd.DataFrame(session.get("optimization_df_original"))
 
         optimized_sales, optimized_prices, current_prices = (
-            OptimizationService.optimize_prices(df_weekly, df_monthly, df_quarterly)
+            OptimizationService.optimize_prices(
+                df_weekly, df_monthly, df_quarterly, df_original
+            )
         )
 
         session["optimized_sales"] = optimized_sales
@@ -191,7 +199,7 @@ def optimize_prices():
                     "message": "Optimization data not available.",
                 }
             )
-        print(f"Succesfully completed optimization.")
+        print(f"Succesfully completed optimization, optimized sales: {optimized_sales}")
         return jsonify(
             {"success": True, "message": "Successfully completed optimization."}
         )
@@ -209,7 +217,7 @@ def get_optimizations():
     optimized_sales = session.get("optimized_sales")
     optimized_prices = session.get("optimized_prices")
     current_prices = session.get("current_prices")
-    print("Optimizations received from session.")
+    print(f"Optimizations received from session, optimized sales: {optimized_sales}")
 
     if optimized_sales is None or optimized_prices is None or current_prices is None:
         print("Optimizations not yet available")

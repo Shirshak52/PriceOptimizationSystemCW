@@ -114,6 +114,8 @@ def cluster_customers():
         )
         session["cluster_counts"] = cluster_counts
         session["metric_averages"] = metric_averages
+        print(cluster_counts)
+        print(metric_averages)
         return jsonify({"success": True})
     else:
         print("segm form not passedd", form.errors)

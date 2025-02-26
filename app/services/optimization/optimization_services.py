@@ -20,16 +20,18 @@ from app.services.optimization.timeframe_specific_services.optimization_services
 class OptimizationService:
 
     @staticmethod
-    def optimize_prices(df_weekly, df_monthly, df_quarterly):
+    def optimize_prices(df_weekly, df_monthly, df_quarterly, df_original):
         """"""
-        optimized_sales_weekly, optimized_prices_weekly, price_this_week = (
-            OptimizationServiceWeekly.maximize_weekly_sales(df_weekly)
+        optimized_sales_weekly, optimized_prices_weekly, prices_this_week = (
+            OptimizationServiceWeekly.maximize_weekly_sales(df_weekly, df_original)
         )
-        optimized_sales_monthly, optimized_prices_monthly, price_this_month = (
-            OptimizationServiceMonthly.maximize_monthly_sales(df_monthly)
+        optimized_sales_monthly, optimized_prices_monthly, prices_this_month = (
+            OptimizationServiceMonthly.maximize_monthly_sales(df_monthly, df_original)
         )
-        optimized_sales_quarterly, optimized_prices_quarterly, price_this_quarter = (
-            OptimizationServiceQuarterly.maximize_quarterly_sales(df_quarterly)
+        optimized_sales_quarterly, optimized_prices_quarterly, prices_this_quarter = (
+            OptimizationServiceQuarterly.maximize_quarterly_sales(
+                df_quarterly, df_original
+            )
         )
 
         optimized_sales = [
@@ -44,9 +46,38 @@ class OptimizationService:
             optimized_prices_quarterly,
         ]
 
-        current_prices = [price_this_week, price_this_month, price_this_quarter]
+        current_prices = [prices_this_week, prices_this_month, prices_this_quarter]
+        print(f"Optimized sales from service fn: {optimized_sales}")
 
-        return (optimized_sales, optimized_prices, current_prices)
+        return (
+            [float(x) for x in optimized_sales],
+            [{key: float(value) for key, value in d.items()} for d in optimized_prices],
+            [{key: float(value) for key, value in d.items()} for d in current_prices],
+        )
+
+    @staticmethod
+    def get_original_dataset(file):
+        try:
+            file.seek(0)
+            # Excel
+            if file.filename.endswith((".xls", ".xlsx")):
+                df = pd.read_excel(file)
+
+            # CSV
+            elif file.filename.endswith(".csv"):
+                df = pd.read_csv(file, encoding="utf-8")
+
+            df_original = df.copy()
+            df_original["Order Date"] = pd.to_datetime(
+                df_original["Order Date"], errors="coerce"
+            )
+            df_original.dropna(inplace=True)
+            df_original.drop_duplicates(inplace=True)
+
+        except Exception as e:
+            print(f"Error while getting original dataset: {str(e)}")
+
+        return df_original
 
     @staticmethod
     def save_to_db(

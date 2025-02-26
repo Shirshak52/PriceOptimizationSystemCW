@@ -3,6 +3,10 @@ from flask import current_app
 from joblib import load
 from scipy.optimize import minimize
 
+from app.services.optimization.segmentation_specific_services.optimization_segmentation_services import (
+    OptimizationSegmentationService,
+)
+
 
 class OptimizationServiceWeekly:
 
@@ -25,7 +29,7 @@ class OptimizationServiceWeekly:
     ]
 
     @staticmethod
-    def maximize_weekly_sales(df_weekly):
+    def maximize_weekly_sales(df_weekly, df_original):
         """"""
         df = df_weekly.copy()
         price_this_week = df["Price This Week"]
@@ -45,15 +49,27 @@ class OptimizationServiceWeekly:
 
         # Initial guess: use current values of Price This Week for optimization
         initial_guess = price_this_week.values
+        # print(f"initial guess: {initial_guess}")
+
+        avg_price_spent_per_product = (
+            OptimizationServiceWeekly.get_avg_price_spent_per_product(df_original)
+        )
+
+        max_current_price = max(initial_guess)
+
+        upper_bound = max(avg_price_spent_per_product, max_current_price)
+
+        # Set the lower bound (minimum acceptable price of any product)
+        lower_bound = min(initial_guess) * 0.8
+
+        bounds = [(lower_bound, upper_bound) for _ in range(len(initial_guess))]
 
         # Perform optimization
         result = minimize(
-            objective,
-            initial_guess,
-            args=(df,),
-            method="TNC",
-            bounds=[(0, None)] * len(initial_guess),
+            objective, initial_guess, args=(df,), method="Powell", bounds=bounds
         )
+
+        # print(f"result: {result}")
 
         # Extract the optimized prices
         optimized_prices = result.x
@@ -64,12 +80,48 @@ class OptimizationServiceWeekly:
 
         # Get the final optimized sales predictions
         optimized_sales = OptimizationServiceWeekly.predict_weekly_sales(df)
-
+        # print(f"optimized weekly sales: {optimized_sales}")
         return (
             optimized_sales,
             dict(zip(df["Product ID"], optimized_prices)),
             dict(zip(df["Product ID"], price_this_week)),
         )
+
+    @staticmethod
+    def get_avg_price_spent_per_product(df_original):
+        """"""
+        # Segment customers for upper and lower bounds
+        segmentation_metrics_df = OptimizationSegmentationService.engineer_features(
+            df_original
+        )
+
+        # Get the averages per cluster of the chosen metrics
+        cluster_counts_avg_sales, metric_averages_avg_sales = (
+            OptimizationSegmentationService.segment_customers(
+                segmentation_metrics_df, "auto", "Average Weekly Sales"
+            )
+        )
+
+        cluster_counts_avg_quantity, metric_averages_avg_quantity = (
+            OptimizationSegmentationService.segment_customers(
+                segmentation_metrics_df, "auto", "Average Weekly Quantity"
+            )
+        )
+
+        avg_sales_largest_cluster = max(
+            cluster_counts_avg_sales, key=cluster_counts_avg_sales.get
+        )
+        largest_avg_sales = metric_averages_avg_sales[avg_sales_largest_cluster]
+
+        avg_quantity_largest_cluster = max(
+            cluster_counts_avg_quantity, key=cluster_counts_avg_quantity.get
+        )
+        largest_avg_quantity = metric_averages_avg_quantity[
+            avg_quantity_largest_cluster
+        ]
+
+        avg_price_spent_per_product = largest_avg_sales / largest_avg_quantity
+        return avg_price_spent_per_product
 
     @staticmethod
     def predict_weekly_sales(df_weekly):

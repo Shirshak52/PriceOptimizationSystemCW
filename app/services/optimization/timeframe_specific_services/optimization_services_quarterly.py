@@ -3,6 +3,10 @@ from flask import current_app
 from joblib import load
 from scipy.optimize import minimize
 
+from app.services.optimization.segmentation_specific_services.optimization_segmentation_services import (
+    OptimizationSegmentationService,
+)
+
 
 class OptimizationServiceQuarterly:
 
@@ -25,7 +29,7 @@ class OptimizationServiceQuarterly:
     ]
 
     @staticmethod
-    def maximize_quarterly_sales(df_quarterly):
+    def maximize_quarterly_sales(df_quarterly, df_original):
         """"""
         df = df_quarterly.copy()
         price_this_quarter = df["Price This Quarter"]
@@ -33,7 +37,7 @@ class OptimizationServiceQuarterly:
         # Define the objective function
         def objective(price_this_quarter_tweaked, df):
             # Update the price this quarter
-            df["Price This Month"] = price_this_quarter_tweaked
+            df["Price This Quarter"] = price_this_quarter_tweaked
 
             # Calculate Price Change %
             df = OptimizationServiceQuarterly.engineer_price_change_percent(df)
@@ -47,31 +51,79 @@ class OptimizationServiceQuarterly:
 
         # Initial guess: use current values of Price This Quarter for optimization
         initial_guess = price_this_quarter.values
+        # print(f"initial guess: {initial_guess}")
+
+        avg_price_spent_per_product = (
+            OptimizationServiceQuarterly.get_avg_price_spent_per_product(df_original)
+        )
+
+        max_current_price = max(initial_guess)
+
+        upper_bound = max(avg_price_spent_per_product, max_current_price)
+
+        # Set the lower bound (minimum acceptable price of any product)
+        lower_bound = min(initial_guess) * 0.8
+
+        bounds = [(lower_bound, upper_bound) for _ in range(len(initial_guess))]
 
         # Perform optimization
         result = minimize(
-            objective,
-            initial_guess,
-            args=(df,),
-            method="TNC",
-            bounds=[(0, None)] * len(initial_guess),
+            objective, initial_guess, args=(df,), method="Powell", bounds=bounds
         )
+
+        print(f"result: {result}")
 
         # Extract the optimized prices
         optimized_prices = result.x
 
         # Apply optimized prices to the dataset
-        df["Price This Week"] = optimized_prices
+        df["Price This Quarter"] = optimized_prices
         df = OptimizationServiceQuarterly.engineer_price_change_percent(df)
 
         # Get the final optimized sales predictions
         optimized_sales = OptimizationServiceQuarterly.predict_quarterly_sales(df)
-
+        # print(f"optimized weekly sales: {optimized_sales}")
         return (
             optimized_sales,
             dict(zip(df["Product ID"], optimized_prices)),
             dict(zip(df["Product ID"], price_this_quarter)),
         )
+
+    @staticmethod
+    def get_avg_price_spent_per_product(df_original):
+        """"""
+        # Segment customers for upper and lower bounds
+        segmentation_metrics_df = OptimizationSegmentationService.engineer_features(
+            df_original
+        )
+
+        # Get the averages per cluster of the chosen metrics
+        cluster_counts_avg_sales, metric_averages_avg_sales = (
+            OptimizationSegmentationService.segment_customers(
+                segmentation_metrics_df, "auto", "Average Quarterly Sales"
+            )
+        )
+
+        cluster_counts_avg_quantity, metric_averages_avg_quantity = (
+            OptimizationSegmentationService.segment_customers(
+                segmentation_metrics_df, "auto", "Average Quarterly Quantity"
+            )
+        )
+
+        avg_sales_largest_cluster = max(
+            cluster_counts_avg_sales, key=cluster_counts_avg_sales.get
+        )
+        largest_avg_sales = metric_averages_avg_sales[avg_sales_largest_cluster]
+
+        avg_quantity_largest_cluster = max(
+            cluster_counts_avg_quantity, key=cluster_counts_avg_quantity.get
+        )
+        largest_avg_quantity = metric_averages_avg_quantity[
+            avg_quantity_largest_cluster
+        ]
+
+        avg_price_spent_per_product = largest_avg_sales / largest_avg_quantity
+        return avg_price_spent_per_product
 
     @staticmethod
     def predict_quarterly_sales(df_quarterly):

@@ -174,8 +174,10 @@ async function fetchOptimizations() {
 
             salesChart.data.labels = predictionLabels;
 
-            salesChart.data.datasets[1].data = data.optimized_sales || [
-                0, 0, 0,
+            salesChart.data.datasets[1].data = [
+                data.optimized_sales[0] || 0,
+                data.optimized_sales[1] || 0,
+                data.optimized_sales[2] || 0,
             ];
         }
 

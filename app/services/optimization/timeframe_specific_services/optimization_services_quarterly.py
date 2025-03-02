@@ -71,7 +71,7 @@ class OptimizationServiceQuarterly:
             objective, initial_guess, args=(df,), method="Powell", bounds=bounds
         )
 
-        print(f"result: {result}")
+        # print(f"result: {result}")
 
         # Extract the optimized prices
         optimized_prices = result.x

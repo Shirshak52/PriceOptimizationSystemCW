@@ -16,9 +16,18 @@
             type="submit"
             class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm mt-4 px-5 py-2.5 text-center"
         >
-            Download Report
+            Download Report <br />
+            (includes optimized prices)
         </button>
     </form>
+    <!-- Processing message -->
+    <p
+        id="optimizing-message"
+        class="border-white mt-4 text-fyp-tertiary-100 font-bold text-sm"
+        style="display: none"
+    >
+        Optimizing prices, please wait...
+    </p>
 </div>
 
 {% endmacro %}

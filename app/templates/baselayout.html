@@ -18,9 +18,17 @@
     </head>
 
     <body class="flex flex-col items-center pt-20 bg-fyp-primary-100">
-        <!-- Chart.js -->
+        <!-- ChartJS -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- ChartJS plugin - ColorSchemes -->
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
+
+        <!-- ChartJS plugin - DataLabels -->
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+        <!-- SheetJS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
         <!-- Navbar -->
         {% from "macros/navbar_macro.html" import navbar %} {{navbar()}}

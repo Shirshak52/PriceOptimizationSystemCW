@@ -35,11 +35,10 @@ const predictionChart = new Chart(context, {
         responsive: true,
         barThickness: 50,
         animations: {
-            onUpdate: {
-                easing: "easeOutCubic",
-            },
-            animation: {
-                duration: 1000,
+            duration: 3000,
+            easing: "easeOutQuart",
+            x: {
+                from: false,
             },
         },
 
@@ -116,7 +115,7 @@ async function fetchPredictions() {
             ];
 
             // Update the chart
-            predictionChart.update("resize");
+            predictionChart.update();
 
             // Stop the polling for predictions and reset the polling ID
             clearInterval(pollingInterval);

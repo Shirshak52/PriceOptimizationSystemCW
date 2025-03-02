@@ -29,6 +29,6 @@ class OptimizedPrices(db.Model):
     )
     # PRIMARY KEY END=================================================
 
-    # Predicted prices and optimized prices
-    predicted_prices = db.Column(db.Float, nullable=False)
-    optimized_prices = db.Column(db.Float, nullable=False)
+    # Current prices and optimized prices
+    current_price = db.Column(db.Float, nullable=False)
+    optimized_price = db.Column(db.Float, nullable=False)

@@ -83,16 +83,17 @@ def upload_prediction_dataset_file():
             return jsonify(
                 {
                     "success": False,
-                    "message": "Optimization file too large.",
+                    "message": validation_message,
                 }
             )
 
     else:
         print("Form val failed")
+        message = DatasetFileService.validate_datasetfile(form.file.data)[1]
         return jsonify(
             {
                 "success": False,
-                "message": "Form validation failed.",
+                "message": message,
             }
         )
 
@@ -174,22 +175,18 @@ def optimize_prices():
         df_quarterly = pd.DataFrame(session.get("prediction_df_quarterly"))
         df_original = pd.DataFrame(session.get("optimization_df_original"))
 
-        optimized_sales, optimized_prices, current_prices = (
-            OptimizationService.optimize_prices(
-                df_weekly, df_monthly, df_quarterly, df_original
-            )
+        optimized_sales, price_list = OptimizationService.optimize_prices(
+            df_weekly, df_monthly, df_quarterly, df_original
         )
 
         session["optimized_sales"] = optimized_sales
-        session["optimized_prices"] = optimized_prices
-        session["current_prices"] = current_prices
+        session["price_list"] = price_list
 
         if not all(
             k in session
             for k in [
                 "optimized_sales",
-                "optimized_prices",
-                "current_prices",
+                "price_list",
             ]
         ):
             print("Optimization data unavailable")
@@ -215,11 +212,10 @@ def optimize_prices():
 @login_required
 def get_optimizations():
     optimized_sales = session.get("optimized_sales")
-    optimized_prices = session.get("optimized_prices")
-    current_prices = session.get("current_prices")
+    price_list = session.get("price_list")
     print(f"Optimizations received from session, optimized sales: {optimized_sales}")
 
-    if optimized_sales is None or optimized_prices is None or current_prices is None:
+    if optimized_sales is None or price_list is None:
         print("Optimizations not yet available")
         return jsonify(
             {"success": False, "message": "Optimizations not yet available."}
@@ -228,34 +224,37 @@ def get_optimizations():
     return jsonify(
         {
             "optimized_sales": optimized_sales,
-            "optimized_prices": optimized_prices,
-            "current_prices": current_prices,
+            "price_list": price_list,
         }
     )
 
 
-@optimization_bp.route("save_to_db", methods=["POST"])
+@optimization_bp.route("save_to_db", methods=["GET"])
 @login_required
 def save_optimization_to_db():
-    """"""
-    # Get the dataset file ID, chosen metric, cluster counts, and metric averages
-    # dataset_file_id = session.get("dataset_file_id")
-    # prediction_weekly = session.get("prediction_weekly")
-    # prediction_monthly = session.get("prediction_monthly")
-    # prediction_quarterly = session.get("prediction_quarterly")
+    """Saves the optimization data to the database"""
+    dataset_file_id = session.get("dataset_file_id")
+    price_list = session.get("price_list")
+    optimized_sales = session.get("optimized_sales")
 
-    # try:
-    #     # Save the data to the database
-    #     PredictionService.save_to_db(
-    #         dataset_file_id, prediction_weekly, prediction_monthly, prediction_quarterly
-    #     )
+    prediction_weekly = session.get("prediction_weekly")
+    prediction_monthly = session.get("prediction_monthly")
+    prediction_quarterly = session.get("prediction_quarterly")
 
-    #     # Return a success response
-    #     print("Prediction report saved successfully!")
-    #     return jsonify(
-    #         {"success": True, "message": "Prediction report saved successfully!"}
-    #     )
+    predicted_sales = [prediction_weekly, prediction_monthly, prediction_quarterly]
 
-    # except Exception as e:
-    #     print("Error:", e)
-    #     return jsonify({"success": False, "message": str(e)})
+    try:
+        # Save the data to the database
+        OptimizationService.save_to_db(
+            dataset_file_id, price_list, optimized_sales, predicted_sales
+        )
+
+        # Return a success response
+        print("Optimization report saved successfully!")
+        return jsonify(
+            {"success": True, "message": "Optimization report saved successfully!"}
+        )
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"success": False, "message": str(e)})

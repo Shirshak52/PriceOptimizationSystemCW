@@ -4,6 +4,7 @@ bidict==0.23.1
 billiard==4.2.1
 blinker==1.9.0
 cachelib==0.13.0
+chardet==5.2.0
 click==8.1.8
 click-didyoumean==0.3.1
 click-plugins==1.1.1
@@ -31,6 +32,7 @@ msgspec==0.19.0
 numpy==2.2.2
 openpyxl==3.1.5
 pandas==2.2.3
+pillow==11.1.0
 prompt_toolkit==3.0.50
 psycopg2-binary==2.9.10
 python-dateutil==2.9.0.post0
@@ -39,6 +41,7 @@ python-engineio==4.11.2
 python-socketio==5.12.1
 pytz==2025.1
 redis==5.2.1
+reportlab==4.3.1
 scikit-learn==1.6.1
 scipy==1.15.1
 simple-websocket==1.1.0

@@ -5,6 +5,9 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
 from app import db
+from app.models.Optimization.model import Optimization
+from app.models.OptimizedPrices.model import OptimizedPrices
+from app.models.OptimizedSales.model import OptimizedSales
 from app.models.Prediction.model import Prediction
 from app.services.optimization.timeframe_specific_services.optimization_services_monthly import (
     OptimizationServiceMonthly,
@@ -35,9 +38,9 @@ class OptimizationService:
         )
 
         optimized_sales = [
-            optimized_sales_weekly,
-            optimized_sales_monthly,
-            optimized_sales_quarterly,
+            float(optimized_sales_weekly),
+            float(optimized_sales_monthly),
+            float(optimized_sales_quarterly),
         ]
 
         optimized_prices = [
@@ -47,12 +50,40 @@ class OptimizationService:
         ]
 
         current_prices = [prices_this_week, prices_this_month, prices_this_quarter]
-        print(f"Optimized sales from service fn: {optimized_sales}")
+
+        price_list = {
+            "weekly": [
+                {
+                    "product_id": product_id,
+                    "current_price": float(current_prices[0].get(product_id)),
+                    "optimized_price": float(optimized_prices[0].get(product_id)),
+                }
+                for product_id in current_prices[0]
+            ],
+            "monthly": [
+                {
+                    "product_id": product_id,
+                    "current_price": float(current_prices[1].get(product_id)),
+                    "optimized_price": float(optimized_prices[1].get(product_id)),
+                }
+                for product_id in current_prices[1]
+            ],
+            "quarterly": [
+                {
+                    "product_id": product_id,
+                    "current_price": float(current_prices[2].get(product_id)),
+                    "optimized_price": float(optimized_prices[2].get(product_id)),
+                }
+                for product_id in current_prices[2]
+            ],
+        }
+
+        # print(price_list)
+        # print(f"Optimized sales from service fn: {optimized_sales}")
 
         return (
-            [float(x) for x in optimized_sales],
-            [{key: float(value) for key, value in d.items()} for d in optimized_prices],
-            [{key: float(value) for key, value in d.items()} for d in current_prices],
+            optimized_sales,
+            price_list,
         )
 
     @staticmethod
@@ -80,21 +111,42 @@ class OptimizationService:
         return df_original
 
     @staticmethod
-    def save_to_db(
-        # dataset_file_id, prediction_weekly, prediction_monthly, prediction_quarterly
-    ):
+    def save_to_db(dataset_file_id, price_list, optimized_sales, predicted_sales):
         """Saves the predicted sales to the database."""
-        # try:
-        #     prediction = Prediction(
-        #         dataset_file_id=dataset_file_id,
-        #         sales_next_week=prediction_weekly,
-        #         sales_next_month=prediction_monthly,
-        #         sales_next_quarter=prediction_quarterly,
-        #     )
-        #     db.session.add(prediction)
-        #     db.session.commit()
-        # except Exception as e:
-        #     print(f"Error: {str(e)}")
+        try:
+            optimization = Optimization(dataset_file_id=dataset_file_id)
+            db.session.add(optimization)
+            db.session.commit()
+
+            optimization_id = optimization.id
+
+            timeframes = ["Next Week", "Next Month", "Next Quarter"]
+            for timeframe, predicted, optimized in zip(
+                timeframes, predicted_sales, optimized_sales
+            ):
+                optimized_sales_record = OptimizedSales(
+                    optimization_id=optimization_id,
+                    timeframe=timeframe,
+                    predicted_sales=predicted,
+                    optimized_sales=optimized,
+                )
+                db.session.add(optimized_sales_record)
+
+            for i, (key, products) in enumerate(price_list.items()):
+                timeframe = timeframes[i]
+                for product in products:
+                    optimized_prices_record = OptimizedPrices(
+                        optimization_id=optimization_id,
+                        timeframe=timeframe,
+                        product_id=product["product_id"],
+                        current_price=product["current_price"],
+                        optimized_price=product["optimized_price"],
+                    )
+                    db.session.add(optimized_prices_record)
+
+            db.session.commit()
+        except Exception as e:
+            print(f"Error: {str(e)}")
 
     @staticmethod
     def predict_sales(df_weekly, df_monthly, df_quarterly):

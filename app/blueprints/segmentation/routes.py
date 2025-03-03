@@ -112,6 +112,11 @@ def cluster_customers():
         cluster_counts, metric_averages = SegmentationService.segment_customers(
             df, num_of_clusters, chosen_metric
         )
+        if cluster_counts is None or metric_averages is None:
+            return jsonify(
+                {"success": False, "message": "Insufficient variation in data."}
+            )
+
         session["cluster_counts"] = cluster_counts
         session["metric_averages"] = metric_averages
         print(cluster_counts)

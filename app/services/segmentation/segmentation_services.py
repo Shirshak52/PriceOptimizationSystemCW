@@ -44,34 +44,41 @@ class SegmentationService:
     @staticmethod
     def segment_customers(df, num_of_clusters, chosen_metric):
         """Performs KMeans Clustering and returns cluster profiles (cluster counts and metric averages)."""
+        try:
+            # Set a copy of the original dataset with the chosen metric
+            df_original = df[[chosen_metric]].copy()
 
-        # Set a copy of the original dataset with the chosen metric
-        df_original = df[[chosen_metric]].copy()
+            # Scale the dataset with the chosen metric
+            df_clustering = df[[chosen_metric]].copy()
+            df_clustering = SegmentationService.scale_dataset(df_clustering)
 
-        # Scale the dataset with the chosen metric
-        df_clustering = df[[chosen_metric]].copy()
-        df_clustering = SegmentationService.scale_dataset(df_clustering)
+            # Number of clusters
+            n_clusters = (
+                SegmentationService.get_optimal_num_of_clusters(df_clustering)
+                if num_of_clusters == "auto"
+                else int(num_of_clusters)
+            )
 
-        # Number of clusters
-        n_clusters = (
-            SegmentationService.get_optimal_num_of_clusters(df_clustering)
-            if num_of_clusters == "auto"
-            else int(num_of_clusters)
-        )
+            if n_clusters is None or n_clusters < 2:
+                return None, None
 
-        # Initialize KMeans model
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+            # Initialize KMeans model
+            kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
-        # Cluster the data and return labels
-        df_original["Cluster"] = kmeans.fit_predict(df_clustering)
+            # Cluster the data and return labels
+            df_original["Cluster"] = kmeans.fit_predict(
+                df_clustering
+            )  # this line is where the error starts
 
-        # Calculate the cluster counts and the metric averages
-        cluster_counts, metric_averages = SegmentationService.get_cluster_profiles(
-            df_original, chosen_metric
-        )
+            # Calculate the cluster counts and the metric averages
+            cluster_counts, metric_averages = SegmentationService.get_cluster_profiles(
+                df_original, chosen_metric
+            )
 
-        # Return the cluster counts and metric averages dicts
-        return cluster_counts, metric_averages
+            # Return the cluster counts and metric averages dicts
+            return cluster_counts, metric_averages
+        except Exception as e:
+            print(f"Error when clustering: {str(e)}")
 
     @staticmethod
     def get_optimal_num_of_clusters(df_clustering):
@@ -82,14 +89,22 @@ class SegmentationService:
 
             for k in cluster_range:
                 kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-                kmeans.fit(df_clustering)
-                labels = kmeans.labels_
+                labels = kmeans.fit_predict(df_clustering)
+
+                # Check if less than 2 clusters were found
+                if len(set(labels)) < 2:
+                    print(f"Only {len(set(labels))} distinct clusters found.")
+                    return None
+
                 silhouette_avg = silhouette_score(df_clustering, labels)
                 silhouette_scores.append(silhouette_avg)
 
-            return cluster_range[np.argmax(silhouette_scores)]
+            n_clusters = cluster_range[np.argmax(silhouette_scores)]
+            # print(f"Optimal k from sil score:{n_clusters}")
+            return n_clusters
         except Exception as e:
-            print(f"Error: {str(e)}")
+            print(f"Error during sil score: {str(e)}")
+            return None
 
     @staticmethod
     def scale_dataset(df):

@@ -1,9 +1,15 @@
 // Get the DOM elements
 const chartCanvas = document.getElementById("cluster-chart");
 const form = document.getElementById("segmentation-parameters-form");
+const formErrors = document.getElementById(
+    "segmentation-parameters-form-errors"
+);
 const downloadButton = document.getElementById(
     "download-segmentation-report-button"
 );
+const loadingMessage = document.getElementById("segmentation-message");
+
+formErrors.style.display = "none";
 
 // Get chart context
 const context = chartCanvas.getContext("2d");
@@ -31,12 +37,12 @@ const COLORS = [
 const clusterChart = new Chart(context, {
     type: "doughnut", // Type of chart
     data: {
-        labels: [], // Will be populated with cluster labels
+        labels: ["No data yet"], // Will be populated with cluster labels
         datasets: [
             {
                 label: "Customer Count",
-                data: [], // Will be populated with cluster count values
-                backgroundColor: COLORS,
+                data: [1], // Will be populated with cluster count values
+                backgroundColor: "#888888",
                 borderColor: "#202020", // Border color of each section of the chart
                 hoverOffset: 10,
                 rotation: 50,
@@ -69,7 +75,7 @@ const clusterChart = new Chart(context, {
             subtitle: {
                 display: true,
                 text: "",
-                font: { size: 18 },
+                font: { size: 14 },
                 color: "#FFFFFF",
             },
             tooltip: {
@@ -129,8 +135,24 @@ async function fetchClusterProfiles() {
                 }%`;
             };
 
+            clusterChart.data.datasets[0].backgroundColor = COLORS;
+
+            timestamp = new Date().toLocaleString("en-GB", {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true,
+            });
+
             // Set the subtitle as the chosen metric
-            clusterChart.options.plugins.subtitle.text = `Based on ${data.chosen_metric}`;
+            clusterChart.options.plugins.subtitle.text = [
+                `Based on ${data.chosen_metric}`,
+                `Generated on ${timestamp} using OptiPrice ©`,
+            ];
 
             // Update the chart
             clusterChart.update();
@@ -138,6 +160,9 @@ async function fetchClusterProfiles() {
             // Stop the polling for cluster data and reset the polling ID
             clearInterval(pollingInterval);
             pollingInterval = null;
+
+            downloadButton.style.display = "block";
+            loadingMessage.style.display = "none";
         }
     } catch (error) {
         console.error("Error fetching cluster profiles:", error);
@@ -162,6 +187,9 @@ form.addEventListener("submit", async (event) => {
         // If succesful clustering, start polling for cluster data
         if (data.success) {
             console.log("Successfully clustered, starting polling...");
+            downloadButton.style.display = "none";
+            loadingMessage.style.display = "block";
+            formErrors.style.display = "none";
 
             // Start polling every 3 seconds
             if (!pollingInterval) {
@@ -169,6 +197,17 @@ form.addEventListener("submit", async (event) => {
             }
         } else {
             console.error("Clustering failed.");
+            downloadButton.style.display = "none";
+            loadingMessage.style.display = "none";
+
+            if (data.message && data.message.length > 0) {
+                const errorMessage = document.createElement("div");
+                errorMessage.textContent = data.message;
+                formErrors.appendChild(errorMessage);
+                formErrors.style.display = "block";
+            } else {
+                formErrors.style.display = "none";
+            }
         }
     } catch (error) {
         console.error("Error submitting form:", error);

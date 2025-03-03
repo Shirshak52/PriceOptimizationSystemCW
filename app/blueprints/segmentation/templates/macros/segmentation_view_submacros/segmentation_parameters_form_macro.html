@@ -35,6 +35,15 @@
                 </div>
                 {% endfor %}
             </div>
+
+            <!-- Note message -->
+            <p
+                class="border-white mt-4 text-fyp-tertiary-100 font-bold text-sm"
+            >
+                NOTE: The chart may show lesser clusters than selected. This is
+                because the selected number exceeds the number of distinct
+                clusters in the data and is therefore impossible.
+            </p>
         </fieldset>
 
         <!-- Other error messages -->
@@ -56,7 +65,7 @@
     <!-- Submit button -->
     {{ form.submit(class="text-white bg-fyp-tertiary-100
     hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none
-    focus:ring-fyp-primary-100 font-medium rounded-md text-sm mt-8 px-5 py-2.5
+    focus:ring-fyp-primary-100 font-medium rounded-md text-sm mt-4 px-5 py-2.5
     text-center") }}
 </form>
 

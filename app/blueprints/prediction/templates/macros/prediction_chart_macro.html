@@ -15,10 +15,19 @@
             id="download-prediction-report-button"
             type="submit"
             class="w-full text-white bg-fyp-tertiary-100 hover:bg-fyp-tertiary-200 focus:ring-2 focus:outline-none focus:ring-fyp-primary-100 font-medium rounded-md text-sm mt-4 px-5 py-2.5 text-center"
+            style="display: none"
         >
             Download Report
         </button>
     </form>
+    <!-- Processing message -->
+    <p
+        id="predicting-message"
+        class="border-white mt-4 text-fyp-tertiary-100 font-bold text-sm"
+        style="display: none"
+    >
+        Predicting sales, please wait...
+    </p>
 </div>
 
 {% endmacro %}

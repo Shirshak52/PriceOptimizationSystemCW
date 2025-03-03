@@ -69,6 +69,8 @@ const salesChart = new Chart(context, {
                 },
                 ticks: {
                     color: "#FFFFFF",
+                    padding: 15,
+                    font: { weight: "bold", size: 13 },
                 },
             },
         },
@@ -102,9 +104,9 @@ const salesChart = new Chart(context, {
             },
             datalabels: {
                 anchor: "start", // Position the label on top of the bar
-                align: "top",
+                align: "bottom",
                 color: "#FFFFFF",
-                font: { weight: "bold", size: 10 },
+                font: { weight: "bold", size: 12 },
                 formatter: (value) => value.toFixed(2), // Show two decimal places
             },
         },
@@ -217,8 +219,8 @@ async function fetchOptimizations() {
         ];
 
         salesChart.update();
-        downloadButton.style.display = "block";
         loadingMessage.style.display = "none";
+        downloadButton.style.display = "block";
 
         // Stop the polling for optimization data and reset the polling interval ID
         clearInterval(pollingInterval);
@@ -306,8 +308,8 @@ async function downloadChart(event) {
     const imageUrl = salesChart.toBase64Image();
 
     // Get the current timestamp
-    const timestamp = new Date().toISOString();
-    const timestampString = timestamp.replace(/[:.]/g, "-");
+    const timestamp = new Date();
+    const timestampString = timestamp.toISOString().replace(/[:.]/g, "-");
 
     // Create a download link with the image URL and click it
     const downloadLink = document.createElement("a");
@@ -408,7 +410,7 @@ async function generateExcelFile(timestamp) {
 
     // Add the timestamp and source to a metadata sheet
     const metadataSheetData = [
-        ["Generated on", timestamp],
+        ["Generated on", timestamp.toLocaleString()],
         ["Source", "OptiPrice ©"],
     ];
     const metadataSheet = XLSX.utils.aoa_to_sheet(metadataSheetData);

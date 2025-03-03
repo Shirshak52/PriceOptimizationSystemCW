@@ -7,6 +7,7 @@ const formErrors = document.getElementById(
 const downloadButton = document.getElementById(
     "download-prediction-report-button"
 );
+const loadingMessage = document.getElementById("predicting-message");
 
 formErrors.style.display = "none";
 
@@ -15,6 +16,8 @@ const context = chartCanvas.getContext("2d");
 
 // Define color palette
 const COLORS = ["#16CA1F", "#34D399", "#60A5FA "];
+
+Chart.register(ChartDataLabels);
 
 // Initialize the chart
 const predictionChart = new Chart(context, {
@@ -58,6 +61,8 @@ const predictionChart = new Chart(context, {
                 },
                 ticks: {
                     color: "#FFFFFF",
+                    padding: 15,
+                    font: { weight: "bold", size: 13 },
                 },
             },
         },
@@ -70,7 +75,13 @@ const predictionChart = new Chart(context, {
                 text: "Predicted Sales",
                 font: { size: 22 },
                 color: "#FFFFFF",
-                padding: 20,
+            },
+            subtitle: {
+                display: true,
+                text: "Generated on:",
+                font: { size: 12 },
+                color: "#FFFFFF",
+                padding: { bottom: 10 },
             },
             tooltip: {
                 callbacks: {
@@ -79,6 +90,13 @@ const predictionChart = new Chart(context, {
                         return `Prediction: ${value.toFixed(2)}`;
                     },
                 },
+            },
+            datalabels: {
+                anchor: "start", // Position the label on top of the bar
+                align: "bottom",
+                color: "#FFFFFF",
+                font: { weight: "bold", size: 12 },
+                formatter: (value) => value.toFixed(2), // Show two decimal places
             },
         },
     },
@@ -114,8 +132,24 @@ async function fetchPredictions() {
                 data.prediction_quarterly || 0,
             ];
 
+            const timestamp = new Date().toLocaleString("en-GB", {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true,
+            });
+            predictionChart.options.plugins.subtitle.text = [
+                `Generated on: ${timestamp} using OptiPrice ©`,
+            ];
+
             // Update the chart
             predictionChart.update();
+            loadingMessage.style.display = "none";
+            downloadButton.style.display = "block";
 
             // Stop the polling for predictions and reset the polling ID
             clearInterval(pollingInterval);
@@ -128,6 +162,9 @@ async function fetchPredictions() {
 
 // Trigger the endpoint to start the prediction
 async function triggerPrediction() {
+    downloadButton.style.display = "none";
+    loadingMessage.style.display = "block";
+    predictionChart.options.plugins.subtitle.text = "Generated on:";
     try {
         const response = await fetch("predict_sales");
 

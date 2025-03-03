@@ -108,12 +108,16 @@ class DatasetFileService:
 
     @staticmethod
     def clean_dataset(df):
-        """Cleans the dataset by dropping missing values and duplicates, and ensuring
-        correct datatype of ID and date columns."""
+        """Cleans the dataset by dropping missing values and duplicates,
+        dealing with impossible values, and
+        ensuring correct datatype of ID and date columns."""
 
         # Drop missing values and duplicates
         df.dropna(inplace=True)
         df.drop_duplicates(inplace=True)
+
+        # Drop impossible/nonsensical values
+        df = df[(df["Price"] > 0) & (df["Quantity"] > 0) & (df["Sales"] > 0)]
 
         #  Convert date column to datetime
         df[DatasetFileService.datecol] = pd.to_datetime(df[DatasetFileService.datecol])

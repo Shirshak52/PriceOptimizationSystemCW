@@ -174,8 +174,8 @@ async function triggerOptimization() {
     }
 }
 
-let reportTimestamp = null;
-let priceList = null;
+let reportTimestamp;
+let priceList;
 
 async function fetchOptimizations() {
     try {
@@ -202,29 +202,29 @@ async function fetchOptimizations() {
 
             // Store price_list in priceList
             priceList = data.price_list;
+
+            reportTimestamp = new Date().toLocaleString("en-GB", {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true,
+            });
+            salesChart.options.plugins.subtitle.text = [
+                `Generated on: ${reportTimestamp} using OptiPrice ©`,
+            ];
+
+            salesChart.update();
+            loadingMessage.style.display = "none";
+            downloadButton.style.display = "block";
+
+            // Stop the polling for optimization data and reset the polling interval ID
+            clearInterval(pollingInterval);
+            pollingInterval = null;
         }
-
-        reportTimestamp = new Date().toLocaleString("en-GB", {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true,
-        });
-        salesChart.options.plugins.subtitle.text = [
-            `Generated on: ${reportTimestamp} using OptiPrice ©`,
-        ];
-
-        salesChart.update();
-        loadingMessage.style.display = "none";
-        downloadButton.style.display = "block";
-
-        // Stop the polling for optimization data and reset the polling interval ID
-        clearInterval(pollingInterval);
-        pollingInterval = null;
     } catch (error) {
         console.error("Error fetching optimizations:", error);
     }
@@ -318,6 +318,7 @@ async function downloadChart(event) {
     downloadLink.click();
 
     try {
+        await generateExcelFile(timestamp);
         // Trigger the endpoint to save optimizations in the db as well
         const save_to_db_response = await fetch("save_to_db", {
             method: "GET",
@@ -410,7 +411,21 @@ async function generateExcelFile(timestamp) {
 
     // Add the timestamp and source to a metadata sheet
     const metadataSheetData = [
-        ["Generated on", timestamp.toLocaleString()],
+        [
+            "Generated on",
+            timestamp
+                .toLocaleString("en-GB", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                })
+                .replace(/[:.]/g, "-"),
+        ],
         ["Source", "OptiPrice ©"],
     ];
     const metadataSheet = XLSX.utils.aoa_to_sheet(metadataSheetData);
@@ -427,12 +442,12 @@ async function generateExcelFile(timestamp) {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    timestamp = timestamp.replace(/[:.]/g, "-");
-
     // Create a download link for the Excel file and click it
     const excelDownloadLink = document.createElement("a");
     excelDownloadLink.href = URL.createObjectURL(blob);
-    excelDownloadLink.download = `optimization-report-prices-${timestamp}.xlsx`;
+    excelDownloadLink.download = `optimization-report-prices-${timestamp
+        .toISOString()
+        .replace(/[:.]/g, "-")}.xlsx`;
     excelDownloadLink.click();
 }
 

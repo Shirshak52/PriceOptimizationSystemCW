@@ -24,6 +24,9 @@ class OptimizationSegmentationService:
             else int(num_of_clusters)
         )
 
+        if n_clusters is None or n_clusters < 2:
+            return None, None
+
         # Initialize KMeans model
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
@@ -49,14 +52,21 @@ class OptimizationSegmentationService:
 
             for k in cluster_range:
                 kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-                kmeans.fit(df_clustering)
-                labels = kmeans.labels_
+                labels = kmeans.fit_predict(df_clustering)
+
+                # Check if less than 2 clusters were found
+                if len(set(labels)) < 2:
+                    print(f"Only {len(set(labels))} distinct clusters found.")
+                    continue
+                    # return None
+
                 silhouette_avg = silhouette_score(df_clustering, labels)
                 silhouette_scores.append(silhouette_avg)
 
             return cluster_range[np.argmax(silhouette_scores)]
         except Exception as e:
             print(f"Error: {str(e)}")
+            return None
 
     @staticmethod
     def scale_dataset(df):

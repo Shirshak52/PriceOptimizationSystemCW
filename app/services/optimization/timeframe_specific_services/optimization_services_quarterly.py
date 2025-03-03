@@ -54,7 +54,9 @@ class OptimizationServiceQuarterly:
         # print(f"initial guess: {initial_guess}")
 
         avg_price_spent_per_product = (
-            OptimizationServiceQuarterly.get_avg_price_spent_per_product(df_original)
+            OptimizationServiceQuarterly.get_avg_price_spent_per_product(
+                df_original, df_quarterly
+            )
         )
 
         max_current_price = max(initial_guess)
@@ -90,7 +92,7 @@ class OptimizationServiceQuarterly:
         )
 
     @staticmethod
-    def get_avg_price_spent_per_product(df_original):
+    def get_avg_price_spent_per_product(df_original, df_quarterly):
         """"""
         # Segment customers for upper and lower bounds
         segmentation_metrics_df = OptimizationSegmentationService.engineer_features(
@@ -109,6 +111,18 @@ class OptimizationServiceQuarterly:
                 segmentation_metrics_df, "auto", "Average Quarterly Quantity"
             )
         )
+
+        if (
+            not cluster_counts_avg_sales
+            or not metric_averages_avg_sales
+            or not cluster_counts_avg_quantity
+            or not metric_averages_avg_quantity
+        ):
+            return max(
+                df_quarterly.groupby("Year-Quarter")["Sales This Quarter"].mean()
+            ) / max(
+                df_quarterly.groupby("Year-Quarter")["Quantity This Quarter"].mean()
+            )
 
         avg_sales_largest_cluster = max(
             cluster_counts_avg_sales, key=cluster_counts_avg_sales.get

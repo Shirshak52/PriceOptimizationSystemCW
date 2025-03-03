@@ -52,7 +52,9 @@ class OptimizationServiceWeekly:
         # print(f"initial guess: {initial_guess}")
 
         avg_price_spent_per_product = (
-            OptimizationServiceWeekly.get_avg_price_spent_per_product(df_original)
+            OptimizationServiceWeekly.get_avg_price_spent_per_product(
+                df_original, df_weekly
+            )
         )
 
         max_current_price = max(initial_guess)
@@ -88,7 +90,7 @@ class OptimizationServiceWeekly:
         )
 
     @staticmethod
-    def get_avg_price_spent_per_product(df_original):
+    def get_avg_price_spent_per_product(df_original, df_weekly):
         """"""
         # Segment customers for upper and lower bounds
         segmentation_metrics_df = OptimizationSegmentationService.engineer_features(
@@ -107,6 +109,16 @@ class OptimizationServiceWeekly:
                 segmentation_metrics_df, "auto", "Average Weekly Quantity"
             )
         )
+
+        if (
+            not cluster_counts_avg_sales
+            or not metric_averages_avg_sales
+            or not cluster_counts_avg_quantity
+            or not metric_averages_avg_quantity
+        ):
+            return max(df_weekly.groupby("Year-Week")["Sales This Week"].mean()) / max(
+                df_weekly.groupby("Year-Week")["Quantity This Week"].mean()
+            )
 
         avg_sales_largest_cluster = max(
             cluster_counts_avg_sales, key=cluster_counts_avg_sales.get

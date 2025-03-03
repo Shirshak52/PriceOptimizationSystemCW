@@ -1,4 +1,4 @@
-from flask import jsonify, redirect, render_template, url_for, flash, session
+from flask import jsonify, redirect, render_template, request, url_for, flash, session
 from flask_login import login_required
 from werkzeug.exceptions import RequestEntityTooLarge
 
@@ -22,11 +22,9 @@ def segmentation_dashboard():
     file_upload_form = FileUploadForm()
 
     # Form to input number of clusters and clustering metric
-    segmentation_parameters_form = (
-        SegmentationParametersForm()
-        if session.get("segmentation_file_uploaded")
-        else None
-    )
+    segmentation_parameters_form = SegmentationParametersForm()
+
+    segmentation_file_uploaded = request.args.get("uploaded", "False").lower() == "true"
 
     # Render segmentation.html with the 2 forms
     return render_template(
@@ -34,7 +32,7 @@ def segmentation_dashboard():
         file_upload_form=file_upload_form,
         segmentation_parameters_form=segmentation_parameters_form,
         # Boolean that shows only one of the forms
-        segmentation_file_uploaded=session.get("segmentation_file_uploaded"),
+        segmentation_file_uploaded=segmentation_file_uploaded,
     )
 
 
@@ -44,13 +42,13 @@ def upload_segmentation_dataset_file():
     """Validates the file-uploading form and saves it after preprocessing."""
 
     # File-uploading form
-    form = FileUploadForm()
+    file_upload_form = FileUploadForm()
 
-    if form.validate_on_submit():
+    if file_upload_form.validate_on_submit():
         print("FORM VALIDATION PASSED")
         try:
             # Retrieve the file
-            file = form.file.data
+            file = file_upload_form.file.data
 
             is_valid_file, validation_message = DatasetFileService.validate_datasetfile(
                 file
@@ -74,9 +72,14 @@ def upload_segmentation_dataset_file():
             flash("The file is too large. Please upload a smaller file.", "error")
 
     else:
-        print("FORM VAL FAILED", form.errors)
+        print("FORM VAL FAILED", file_upload_form.errors)
 
-    return redirect(url_for("segm.segmentation_dashboard"))
+    return redirect(
+        url_for(
+            "segm.segmentation_dashboard",
+            uploaded=session.get("segmentation_file_uploaded"),
+        )
+    )
 
 
 @segmentation_bp.route("/change_file", methods=["POST"])
@@ -84,7 +87,12 @@ def upload_segmentation_dataset_file():
 def change_segmentation_dataset_file():
     """Redirects user back to the file-uploading form."""
     session["segmentation_file_uploaded"] = False
-    return redirect(url_for("segm.segmentation_dashboard"))
+    return redirect(
+        url_for(
+            "segm.segmentation_dashboard",
+            uploaded=session.get("segmentation_file_uploaded"),
+        )
+    )
 
 
 @segmentation_bp.route("/cluster_customers", methods=["POST"])

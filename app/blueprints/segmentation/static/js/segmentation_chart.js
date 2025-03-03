@@ -33,6 +33,8 @@ const COLORS = [
     "#5A5A66",
 ];
 
+Chart.register(ChartDataLabels);
+
 // Initialize the chart
 const clusterChart = new Chart(context, {
     type: "doughnut", // Type of chart
@@ -64,6 +66,9 @@ const clusterChart = new Chart(context, {
                 labels: {
                     color: "#FFFFFF",
                     padding: 20,
+                    font: {
+                        weight: "bold",
+                    },
                 },
             },
             title: {
@@ -94,6 +99,18 @@ const clusterChart = new Chart(context, {
                     },
                 },
             },
+            datalabels: {
+                anchor: "center", // Position the label at the center of the slice
+                align: "center",
+                color: "#FFFFFF",
+                font: { weight: "bold", size: 12 },
+                formatter: (value, ctx) => {
+                    const dataset = ctx.chart.data.datasets[0].data;
+                    const total = dataset.reduce((a, b) => a + b, 0);
+                    const percentage = ((value / total) * 100).toFixed(2);
+                    return `${percentage}%`;
+                },
+            },
         },
     },
 });
@@ -116,7 +133,7 @@ async function fetchClusterProfiles() {
             clusterChart.data.labels = clusterKeys.map((key) => {
                 const avgMetric =
                     data.metric_averages?.[key]?.toFixed(2) || "N/A";
-                return `Cluster ${parseInt(key) + 1} (Avg :${avgMetric})`;
+                return `Cluster ${parseInt(key) + 1} (Avg.: ${avgMetric})`;
             });
 
             // Set the chart sections as the cluster counts

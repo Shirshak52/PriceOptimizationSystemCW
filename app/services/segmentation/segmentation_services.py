@@ -94,7 +94,8 @@ class SegmentationService:
                 # Check if less than 2 clusters were found
                 if len(set(labels)) < 2:
                     print(f"Only {len(set(labels))} distinct clusters found.")
-                    return None
+                    continue
+                    # return None
 
                 silhouette_avg = silhouette_score(df_clustering, labels)
                 silhouette_scores.append(silhouette_avg)

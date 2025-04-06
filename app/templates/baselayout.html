@@ -5,15 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %}OptiPrice{% endblock %}</title>
 
-        <!-- Default Flowbite CSS -->
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='dist/css/flowbite.min.css') }}"
-        />
         <!-- Custom Flowbite CSS -->
         <link
             rel="stylesheet"
             href="{{ url_for('static', filename='dist/css/output.css') }}"
+        />
+
+        <!-- Default Flowbite CSS -->
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='dist/css/flowbite.min.css') }}"
         />
     </head>
 
@@ -30,9 +31,8 @@
         <!-- SheetJS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-        <!-- Navbar -->
-        {% from "macros/navbar_macro.html" import navbar %} {{navbar()}}
-
+        <!-- Sidebar -->
+        {% from "macros/navbar_macro.html" import navbar %} {{ navbar() }}
         <!-- Main Content -->
         <div class="container pt-6 flex flex-col items-center">
             {% block content %}{% endblock %}

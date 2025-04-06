@@ -15,8 +15,8 @@ formErrors.style.display = "none";
 const context = salesChartCanvas.getContext("2d");
 
 // Define color palette
-const COLORS = ["#16CA1F", "#34D399", "#60A5FA"];
-const COLOR_PREDICTED_SALES = COLORS[2];
+const COLORS = ["#10B981", "#3B82F6"];
+const COLOR_PREDICTED_SALES = COLORS[1];
 const COLOR_OPTIMIZED_SALES = COLORS[0];
 
 Chart.register(ChartDataLabels);

@@ -8,11 +8,12 @@
 @source "../../node_modules/flowbite";
 
 @theme {
-    --color-fyp-primary-100: #CCCCCC;
-    --color-fyp-secondary-100: #000117;
-    --color-fyp-secondary-200: #34495E;
-    --color-fyp-tertiary-100: #16CA1F;
+    --color-fyp-primary-100: #1F2833;
+    --color-fyp-secondary-100: #0B0C10;
+    --color-fyp-secondary-200: #15171F;
+    --color-fyp-tertiary-100: #04D900;
     --color-fyp-tertiary-200: #47EB50;
+    --color-fyp-textcolor-100: #C5C6C7;
     /* --color-primary-300: #93c5fd;
     --color-primary-400: #60a5fa;
     --color-primary-500: #3b82f6;

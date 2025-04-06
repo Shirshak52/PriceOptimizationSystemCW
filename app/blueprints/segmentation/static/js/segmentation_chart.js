@@ -16,21 +16,21 @@ const context = chartCanvas.getContext("2d");
 
 // Define color palette
 const COLORS = [
+    "#04FF00",
     "#16CA1F",
-    "#097248",
-    "#007A25",
+    "#F3722C",
+    "#D90429",
+    "#FFBA08",
     "#0E99A3",
     "#1D5B79",
     "#4059AD",
     "#613DC1",
     "#9D0191",
-    "#D90429",
-    "#F3722C",
-    "#FFBA08",
-    "#97CC04",
-    "#7C3E66",
-    "#582F0E",
-    "#5A5A66",
+    "#C0392B",
+    "#F39C12",
+    "#8E44AD",
+    "#27AE60",
+    "#3498DB",
 ];
 
 Chart.register(ChartDataLabels);

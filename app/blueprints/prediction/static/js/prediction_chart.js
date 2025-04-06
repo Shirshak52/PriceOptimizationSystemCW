@@ -15,7 +15,7 @@ formErrors.style.display = "none";
 const context = chartCanvas.getContext("2d");
 
 // Define color palette
-const COLORS = ["#16CA1F", "#34D399", "#60A5FA "];
+const COLORS = ["#04FF00", "#3B82F6", "#FACC15"];
 
 Chart.register(ChartDataLabels);
 

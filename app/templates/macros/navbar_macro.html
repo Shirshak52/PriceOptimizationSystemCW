@@ -1,7 +1,7 @@
 {% macro navbar() %} {% set current_page = request.endpoint %}
 
 <nav
-    class="bg-fyp-secondary-100 dark:fyp-secondary-200 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600"
+    class="bg-fyp-secondary-100 dark:fyp-secondary-200 fixed w-full z-20 top-0 start-0 border-b border-gray-200 rounded-b-xl dark:border-gray-600 hover:bg-fyp-secondary-200 transition-all duration-100 ease-in-out"
 >
     <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
         <!-- Logo on the left -->
@@ -18,9 +18,11 @@
 
         <!-- Navbar on the right -->
         <div
-            class="flex items-center space-x-8 md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+            class="flex items-center space-x-8 flex-row mt-0 border-0 dark:bg-gray-800 dark:border-gray-700"
         >
-            <ul class="bg-fyp-secondary-100 flex space-x-8 p-4 font-medium">
+            <ul
+                class="bg-transparent flex space-x-8 p-4 font-medium hover:bg-fyp-secondary-200 transition-all duration-100 ease-in-out"
+            >
                 <li>
                     <a
                         href="{{ url_for('main.index') }}"

@@ -40,31 +40,42 @@
     <!-- Password -->
     <div class="mb-6">
         <!-- Label -->
-        <label
-            for="password"
-            class="block text-sm font-medium text-white dark:text-white"
-        >
-            {{ form.password.label }}
-        </label>
+        <div class="flex flex-col border-white justify-between">
+            <label
+                for="password"
+                class="block text-sm font-medium text-white dark:text-white"
+            >
+                {{ form.password.label }}
+            </label>
+            <div class="border-white w-full flex">
+                <!-- Input field -->
+                {{ form.password( id="login-pw" ,class="w-full bg-gray-100
+                border border-gray-300 text-black text-sm rounded-md
+                focus:ring-fyp-tertiary-100 focus:border-fyp-tertiary-100 block
+                p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                dark:focus:ring-fyp-tertiary-100
+                dark:focus:border-fyp-tertiary-100 transition") }}
+                <!--  Validator error messages -->
+                {% if form.password.errors %}
+                <ul
+                    class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                    role="alert"
+                >
+                    {% for error in form.password.errors %}
+                    <li class="font-medium">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
 
-        <!-- Input field -->
-        {{ form.password(class="w-full bg-gray-100 border border-gray-300
-        text-black text-sm rounded-md focus:ring-fyp-tertiary-100
-        focus:border-fyp-tertiary-100 block p-2.5 dark:bg-gray-700
-        dark:border-gray-600 dark:text-white dark:focus:ring-fyp-tertiary-100
-        dark:focus:border-fyp-tertiary-100 transition") }}
-
-        <!--  Validator error messages -->
-        {% if form.password.errors %}
-        <ul
-            class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-            role="alert"
-        >
-            {% for error in form.password.errors %}
-            <li class="font-medium">{{ error }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+                <button
+                    type="button"
+                    class="px-4 ml-2 border-white text-white text-sm font-bold bg-fyp-tertiary-100 rounded-md hover:bg-fyp-tertiary-200"
+                    onclick="toggleVisibility()"
+                >
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Login button -->
@@ -75,4 +86,11 @@
         {{ form.submit }}
     </button>
 </form>
+
+<script>
+    function toggleVisibility() {
+        const pw = document.getElementById("login-pw");
+        pw.type = pw.type === "password" ? "text" : "password";
+    }
+</script>
 {% endmacro %}

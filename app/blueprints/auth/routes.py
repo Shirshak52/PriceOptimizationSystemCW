@@ -30,6 +30,8 @@ def handle_login():
         # Handle login
         return LoginService.handle_login(form)
 
+    return render_template("login.html", form=form)
+
 
 @auth_bp.route("/logout")
 @login_required

@@ -87,7 +87,7 @@ def upload_prediction_dataset_file():
         return jsonify(
             {
                 "success": False,
-                "message": "Form validation failed.",
+                "message": form.file.errors,
             }
         )
 

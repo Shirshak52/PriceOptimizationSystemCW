@@ -93,7 +93,7 @@ def upload_prediction_dataset_file():
         return jsonify(
             {
                 "success": False,
-                "message": message,
+                "message": form.file.errors,
             }
         )
 

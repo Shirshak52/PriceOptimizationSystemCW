@@ -10,8 +10,8 @@ class FileUploadForm(FlaskForm):
         validators=[
             FileRequired("No file selected!"),
             FileAllowed(
-                ["csv", "json", "sql", "xlsx", "xls"],
-                "Only CSV, JSON, SQL, and Excel files are allowed!",
+                ["csv", "xlsx", "xls"],
+                "Only CSV and Excel files are allowed!",
             ),
         ],
     )

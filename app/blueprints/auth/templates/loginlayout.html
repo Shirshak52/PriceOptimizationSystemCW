@@ -21,23 +21,46 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         />
+
+        <style>
+            body {
+                background-image: url("{{ url_for('auth.static', filename='images/login-page-image-2.png') }}");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 100% 100%;
+                /*max-height: 100vh;*/
+            }
+            #login-form-div {
+                background-color: rgba(
+                    11,
+                    12,
+                    16,
+                    0.8
+                ); /* Custom color with opacity */
+            }
+            #login-form-div:hover {
+                background-color: black;
+                transition: all 0.1s ease-in-out;
+            }
+        </style>
     </head>
 
     <body
-        class="border bg-fyp-primary-100 h-screen flex items-center justify-between"
+        class="border bg-fyp-primary-100 h-screen flex items-center justify-center py-4"
     >
         <!-- Main Content -->
         <!-- Image -->
-        <div class="border w-full h-full flex items-center justify-center">
+        <!-- <div class="border w-full h-full flex items-center justify-center">
             <img
                 src="{{ url_for('static', filename='images/login-page-image.png') }}"
                 alt="Login Page Image"
                 class="border w-full h-full"
             />
-        </div>
+        </div> -->
         <!-- Login Form -->
         <div
-            class="w-full max-w-md h-full flex p-8 bg-fyp-secondary-100 shadow-lg"
+            id="login-form-div"
+            class="w-full border border-white max-w-md h-full flex p-8 rounded-xl shadow-lg"
         >
             {% block content %}{% endblock %}
         </div>

@@ -29,8 +29,10 @@
 
             <!-- File upload field -->
             {{ form.file(class="block w-full text-sm text-black border
-            border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:ring-2
-            focus:outline-none focus:ring-fyp-primary-100 ") }}
+            rounded-lg file:rounded-l-lg cursor-pointer bg-white focus:ring-2
+            focus:outline-none focus:ring-fyp-primary-100 h-10 file:h-10
+            file:bg-fyp-primary-100 file:text-white file:font-medium file:px-4
+            file:hover:bg-fyp-secondary-100") }}
 
             <!-- Form error messages -->
             {% if form.file.errors %}

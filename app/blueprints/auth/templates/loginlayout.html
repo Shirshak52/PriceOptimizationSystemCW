@@ -5,16 +5,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %}OptiPrice{% endblock %}</title>
 
-        <!-- Default Flowbite CSS -->
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='dist/css/flowbite.min.css') }}"
-        />
-        <!-- Custom Flowbite CSS -->
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='dist/css/output.css') }}"
-        />
+        <!-- Tailwind CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Custom Tailwind Colors -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            "fyp-primary-100": "#1F2833",
+
+                            "fyp-secondary-100": "#0B0C10",
+                            "fyp-secondary-200": "#15171F",
+
+                            "fyp-tertiary-100": "#04D900",
+                            "fyp-tertiary-200": "#47EB50",
+
+                            // Other custom colors here
+                        },
+                    },
+                },
+            };
+        </script>
+
+        <!-- Flowbite CDN -->
+        <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
 
         <!-- Font Awesome CSS (Icons) -->
         <link
@@ -46,17 +62,8 @@
     </head>
 
     <body
-        class="border bg-fyp-primary-100 h-screen flex items-center justify-center py-4"
+        class="bg-fyp-primary-100 h-screen flex items-center justify-center py-4"
     >
-        <!-- Main Content -->
-        <!-- Image -->
-        <!-- <div class="border w-full h-full flex items-center justify-center">
-            <img
-                src="{{ url_for('static', filename='images/login-page-image.png') }}"
-                alt="Login Page Image"
-                class="border w-full h-full"
-            />
-        </div> -->
         <!-- Login Form -->
         <div
             id="login-form-div"

@@ -72,7 +72,8 @@ def upload_segmentation_dataset_file():
             flash("The file is too large. Please upload a smaller file.", "error")
 
     else:
-        print("FORM VAL FAILED", file_upload_form.errors)
+        print("FORM VAL FAILED", file_upload_form.file.errors)
+        return redirect(url_for("segm.segmentation_dashboard"))
 
     return redirect(
         url_for(

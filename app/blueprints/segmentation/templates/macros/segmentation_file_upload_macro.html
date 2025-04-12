@@ -29,14 +29,16 @@
         </label>
 
         <!-- File upload field -->
-        {{ form.file(class="block w-full text-sm text-black border
-        border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:ring-2
-        focus:outline-none focus:ring-fyp-primary-100 ") }}
+        {{ form.file(class="block w-full text-sm text-black border rounded-lg
+        file:rounded-l-lg cursor-pointer bg-white focus:ring-2
+        focus:outline-none focus:ring-fyp-primary-100 h-10 file:h-10
+        file:bg-fyp-primary-100 file:text-white file:font-medium file:px-4
+        file:hover:bg-fyp-secondary-100") }}
 
         <!-- Form error messages -->
         {% if form.file.errors %}
         <div
-            class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+            class="p-4 mt-2 text-sm text-center text-red-800 rounded-lg bg-white dark:bg-gray-800 dark:text-red-400"
             role="alert"
         >
             <!-- Display each message -->

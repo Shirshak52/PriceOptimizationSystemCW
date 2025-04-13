@@ -1,6 +1,14 @@
 {% extends "baselayout.html" %} {% block title %}Home - OptiPrice{% endblock %}
 {% block content %}
 
+<!-- Page header -->
+<h1
+    class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-center text-white md:text-5xl lg:text-6xl dark:text-white"
+>
+    Welcome Back,
+    <span class="text-fyp-tertiary-100">{{current_user.name}}</span>!
+</h1>
+
 <section>
     <div class="py-4 px-4 mx-auto max-w-screen-xl lg:py-4">
         <!-- Card for 'Optimize Prices' start -->

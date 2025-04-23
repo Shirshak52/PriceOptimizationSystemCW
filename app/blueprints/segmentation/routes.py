@@ -41,8 +41,8 @@ def segmentation_dashboard():
 def upload_segmentation_dataset_file():
     """Validates the file-uploading form and saves it after preprocessing."""
 
-    # File-uploading form
     file_upload_form = FileUploadForm()
+    segmentation_parameters_form = SegmentationParametersForm()
 
     if file_upload_form.validate_on_submit():
         print("FORM VALIDATION PASSED")
@@ -67,20 +67,24 @@ def upload_segmentation_dataset_file():
                     validation_message,
                     "error",
                 )
+            return redirect(
+                url_for(
+                    "segm.segmentation_dashboard",
+                    uploaded=session.get("segmentation_file_uploaded"),
+                )
+            )
 
         except RequestEntityTooLarge:
             flash("The file is too large. Please upload a smaller file.", "error")
 
     else:
         print("FORM VAL FAILED", file_upload_form.file.errors)
-        return redirect(url_for("segm.segmentation_dashboard"))
-
-    return redirect(
-        url_for(
-            "segm.segmentation_dashboard",
-            uploaded=session.get("segmentation_file_uploaded"),
+        return render_template(
+            "segmentation.html",
+            file_upload_form=file_upload_form,  # This still contains the errors
+            segmentation_parameters_form=segmentation_parameters_form,
+            segmentation_file_uploaded=False,
         )
-    )
 
 
 @segmentation_bp.route("/change_file", methods=["POST"])

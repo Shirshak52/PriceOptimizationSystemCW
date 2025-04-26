@@ -5,8 +5,11 @@ from joblib import load
 
 class PredictionServiceMonthly:
 
-    model_dir = current_app.config["MODELS_FOLDER_PREDICTION"]
-    monthly_pred_model = load(os.path.join(model_dir, "xgboost_monthly.joblib"))
+    @classmethod
+    def load_model(cls):
+        model_dir = current_app.config["MODELS_FOLDER_PREDICTION"]
+        monthly_pred_model = load(os.path.join(model_dir, "xgboost_monthly.joblib"))
+        return monthly_pred_model
 
     monthly_X_cols = [
         "Price This Month",

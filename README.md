@@ -113,6 +113,12 @@ commit;
 ----------------------------------------
 
 Done! The app is now ready to run locally.  
+To run the app, run this command in the VSCode terminal:  
+```
+flask run
+```
+
+
 To log in, enter any one of the emails in the dummy data. The corresponding password will be as follows:  
 * The password for `branch1@example.com` is `branch1`  
 * The password for `branch2@example.com` is `branch2`  

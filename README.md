@@ -6,7 +6,8 @@ This is a full-stack Flask web app for optimizing product prices, predicting sal
 ----------------------------------------
 
 ## **Getting Started (Local Setup)**  
-Follow the steps carefully to run this project on your local device.
+Follow the steps carefully to run this project on your local device.  
+(Before proceeding, note that PostgreSQL and pgAdmin should be installed and running in your device.)
 
 
 ### 1. **Clone the repository**  

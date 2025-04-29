@@ -86,3 +86,5 @@ To log in, enter any one of the emails in the dummy data. The corresponding pass
 * The password for `branch1@example.com` is `branch1`  
 * The password for `branch2@example.com` is `branch2`  
 and so on.
+
+**Note**: Make sure you have internet access while running the project, as it uses CDN links to various resources.

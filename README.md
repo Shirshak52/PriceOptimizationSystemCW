@@ -65,7 +65,7 @@ Copy the contents from `.env.example` and paste it into `.env`.
 
 **Note**:
 * `.env` variables MUST NOT have spaces around the `=`. The convention MUST be `varname=value`. Also note that the convention is `VARNAME=value` (all capital letters for variables).
-* PostgreSQL must be installed and set up using pgAdmin. Make sure the user and database exist and have all privileges.
+* PostgreSQL must be installed and set up using pgAdmin. Make sure the ***user and database exist (if not, create them)*** and have all privileges.
 
 
 ### 6. **Kill & reopen terminal**  

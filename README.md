@@ -89,5 +89,5 @@ and so on.
 
 **Note**: Make sure you have internet access while running the project, as it uses CDN links to various resources.
 
-**Demo Dataset**: Sample datasets have been included in the `/data/` folder for testing and demonstration purposes. The names of the files are self-explanatory.
+**Demo Dataset**: Sample datasets have been included in the `/demo_data/` folder for testing and demonstration purposes. The names of the files are self-explanatory.
 

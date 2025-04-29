@@ -11,7 +11,9 @@ Follow the steps carefully to run this project on your local device.
 
 ### 1. **Clone the repository**  
 Run this command in your device's terminal:  
-`git clone https://github.com/Shirshak52/PriceOptimizationSystemCW.git`
+```
+git clone https://github.com/Shirshak52/PriceOptimizationSystemCW.git
+```
 
 
 ### 2. **Open the project**  
@@ -22,15 +24,37 @@ Open the cloned folder in Visual Studio Code.
 Run these commands one after the other in the terminal of VSCode.
 
 * Windows (cmd-only):  
-`python -m venv venv`  
-`venv\Scripts\activate`  
+```
+python -m venv venv
+```
+```  
+venv\Scripts\activate
+```  
 
 * Mac/Linux:  
-`python3 -m venv venv`  OR `full_path_to_python_installed_location -m venv venv`  
-`source venv/bin/activate`
+```
+python3 -m venv venv
+```
+```
+source venv/bin/activate
+```
+OR
+```
+full_path_to_python_installed_location -m venv venv
+```  
+```
+source venv/bin/activate
+```
 
 
-### 4. **Create `.env` file**  
+### 4. **Install all dependencies**  
+In the VSCode terminal, run:  
+```
+pip install -r requirements.txt
+```
+
+
+### 5. **Create `.env` file**  
 At the root folder, create a file named `.env`.  
 Copy the contents from `.env.example` and paste it into `.env`.
 
@@ -43,21 +67,27 @@ Copy the contents from `.env.example` and paste it into `.env`.
 * PostgreSQL must be installed and set up using pgAdmin. Make sure the user and database exist and have all privileges.
 
 
-### 5. **Kill & reopen terminal**  
+### 6. **Kill & reopen terminal**  
 Close the current terminal in VS Code and open a new one.  
 If you're on Windows, use CMD (not PowerShell).
 
 
-### 6. **Reset migrations**  
+### 7. **Reset migrations**  
 Delete the entire `migrations` folder. Then in the terminal, run (one after the other):  
-`flask db init`  
-`flask db migrate -m "Any comments you'd like to include"`  
-`flask db upgrade`  
+```
+flask db init
+```
+```
+flask db migrate -m "Any comments you would like to include"
+```
+```
+flask db upgrade
+```
 
 **Confirm via pgAdmin that the tables are created.**
 
 
-### 7. **Insert dummy data**  
+### 8. **Insert dummy data**  
 Open `pgAdmin`, go to Query Tool, paste the SQL insert statements (given below), and execute them.  
 
 ```

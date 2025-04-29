@@ -170,7 +170,9 @@ class DatasetFileService:
         if ml_process not in folder_map:
             raise ValueError(f"Invalid ML process, {ml_process}")
 
-        return folder_map[ml_process]
+        folder = folder_map[ml_process]
+        os.makedirs(folder, exist_ok=True)  # Create the folder if it doesn't exist
+        return folder
 
     @staticmethod
     def generate_unique_filename(file):

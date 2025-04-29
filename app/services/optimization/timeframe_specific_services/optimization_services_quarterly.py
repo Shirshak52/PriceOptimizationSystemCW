@@ -149,10 +149,8 @@ class OptimizationServiceQuarterly:
             OptimizationServiceQuarterly.quarterly_X_cols
         ]
 
-        quarterly_predictions = (
-            OptimizationServiceQuarterly.quarterly_pred_model.predict(
-                prediction_X_quarterly
-            )
+        quarterly_predictions = OptimizationServiceQuarterly.load_model().predict(
+            prediction_X_quarterly
         )
 
         df_quarterly_predictions = df_quarterly.copy()

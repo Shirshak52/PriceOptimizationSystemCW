@@ -144,7 +144,7 @@ class OptimizationServiceWeekly:
         try:
             prediction_X_weekly = df_weekly[OptimizationServiceWeekly.weekly_X_cols]
 
-            weekly_predictions = OptimizationServiceWeekly.weekly_pred_model.predict(
+            weekly_predictions = OptimizationServiceWeekly.load_model().predict(
                 prediction_X_weekly
             )
 

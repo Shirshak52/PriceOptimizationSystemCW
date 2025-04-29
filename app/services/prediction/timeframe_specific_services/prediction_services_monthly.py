@@ -31,7 +31,7 @@ class PredictionServiceMonthly:
         """Predicts the sales next month from the given dataset."""
         prediction_X_monthly = df_monthly[PredictionServiceMonthly.monthly_X_cols]
 
-        monthly_predictions = PredictionServiceMonthly.monthly_pred_model.predict(
+        monthly_predictions = PredictionServiceMonthly.load_model().predict(
             prediction_X_monthly
         )
 

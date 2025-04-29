@@ -32,7 +32,7 @@ class PredictionServiceWeekly:
         try:
             prediction_X_weekly = df_weekly[PredictionServiceWeekly.weekly_X_cols]
 
-            weekly_predictions = PredictionServiceWeekly.weekly_pred_model.predict(
+            weekly_predictions = PredictionServiceWeekly.load_model().predict(
                 prediction_X_weekly
             )
 

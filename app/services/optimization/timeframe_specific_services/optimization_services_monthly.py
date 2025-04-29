@@ -143,7 +143,7 @@ class OptimizationServiceMonthly:
         """Predicts the sales next month from the given dataset."""
         prediction_X_monthly = df_monthly[OptimizationServiceMonthly.monthly_X_cols]
 
-        monthly_predictions = OptimizationServiceMonthly.monthly_pred_model.predict(
+        monthly_predictions = OptimizationServiceMonthly.load_model().predict(
             prediction_X_monthly
         )
 

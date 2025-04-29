@@ -33,7 +33,7 @@ class PredictionServiceQuarterly:
             PredictionServiceQuarterly.quarterly_X_cols
         ]
 
-        quarterly_predictions = PredictionServiceQuarterly.quarterly_pred_model.predict(
+        quarterly_predictions = PredictionServiceQuarterly.load_model().predict(
             prediction_X_quarterly
         )
 

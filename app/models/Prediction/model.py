@@ -4,7 +4,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from app import db
 
 
-# User class
 class Prediction(db.Model):
     # Name of table in database
     __tablename__ = "prediction"

@@ -3,7 +3,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from app import db
 
 
-# User class
 class Cluster(db.Model):
     # Name of table in database
     __tablename__ = "cluster"

@@ -5,7 +5,6 @@ from datetime import datetime
 from app import db
 
 
-# User class
 class DatasetFile(db.Model):
     # Name of table in database
     __tablename__ = "dataset_file"

@@ -88,3 +88,6 @@ To log in, enter any one of the emails in the dummy data. The corresponding pass
 and so on.
 
 **Note**: Make sure you have internet access while running the project, as it uses CDN links to various resources.
+
+**Demo Dataset**: Sample datasets have been included in the `/data/` folder for testing and demonstration purposes. The names of the files are self-explanatory.
+

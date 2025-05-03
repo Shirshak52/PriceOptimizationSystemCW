@@ -1,7 +1,7 @@
 # **OptiPrice**  
 (NOTE: the name **'OptiPrice'** is used in this project solely for academic purposes.)
 
-This is a full-stack Flask web app for optimizing product prices, predicting sales, and segmenting customers using machine learning.
+This is a full-stack Flask web app **designed for supermarkets** for optimizing product prices, predicting sales, and segmenting customers using machine learning.
 
 ----------------------------------------
 

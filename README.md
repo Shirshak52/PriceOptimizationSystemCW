@@ -1,95 +1,129 @@
 # **OptiPrice**  
-(NOTE: the name **'OptiPrice'** is used in this project solely for academic purposes.)
+**(NOTE: The name 'OptiPrice' is used in this project solely for academic and demonstration purposes.)**
 
-This is a full-stack Flask web app **designed for supermarkets** for optimizing product prices, predicting sales, and segmenting customers using machine learning.
+This is a full-stack Flask web application **designed for supermarkets** to empower them with data-driven decision-making. It provides core functionalities for:
+* **Optimizing Product Prices**
+* **Predicting Sales**
+* **Segmenting Customers** using machine learning.
 
-----------------------------------------
+---
 
-## **Getting Started (Local Setup)**  
-Follow the steps carefully to run this project on your local device.  
-(Before proceeding, note that **PostgreSQL and pgAdmin should be installed and running in your device**.)
+## **Core Features**
 
+OptiPrice offers a variety of functionalities to enhance supermarket operations:
 
-### 1. **Clone the repository**  
-Run this command in your device's terminal:  
+* **Intelligent Pricing Suggestions:** Leveraging data analysis to recommend optimal product prices.
+* **Sales Forecasting:** Predicting future sales trends to aid in inventory management and strategic planning.
+* **Customer Segmentation:** Categorizing customers based on their behavior for targeted marketing and personalized experiences.
+* **User-Friendly Interface:** A robust Flask web application providing a seamless experience for supermarket administrators.
+* **Secure Data Handling:** Utilizing PostgreSQL for reliable data storage and management.
+
+---
+
+## **Machine Learning Models: Detailed Analysis**
+
+This project's core intelligence is driven by powerful machine learning models, thoroughly explored and trained in a dedicated Colab notebook. This notebook covers:
+
+* **Customer Segmentation:** In-depth analysis and application of **K-Means Clustering** to identify distinct customer groups based on purchasing patterns.
+* **Sales Prediction:** Development and training of robust sales forecasting models using **XGBoost Regressor**, designed to predict weekly, monthly, and quarterly sales. This section details comprehensive feature engineering, hyperparameter tuning with Optuna, and model evaluation.
+
+The full detailed analysis, code, and model performance metrics can be viewed in the notebook here:  
+[**View Notebook (FYP_ModelTraining.ipynb)**](FYP_ModelTraining.ipynb)
+
+---
+
+## **Technologies Used**
+
+This project leverages a modern tech stack to deliver its features:
+
+* **Backend:** Python, Flask, Flask-SQLAlchemy, Flask-Migrate, Flask-Login, etc.
+* **Database:** PostgreSQL, pgAdmin
+* **Machine Learning:** Scikit-learn, XGBoost, Optuna, Pandas, NumPy, SciPy
+* **Data Visualization:** Matplotlib, Seaborn
+* **Frontend:** HTML, TailwindCSS, Flowbite (via CDN for speed and simplicity)
+* **Version Control:** Git, GitHub
+
+---
+
+## **Getting Started (Local Setup)**
+
+Follow these steps carefully to set up and run OptiPrice on your local device.
+
+**(Before proceeding, ensure that PostgreSQL and pgAdmin are installed and running on your system.)**
+
+### 1. **Clone the Repository**
+Open your terminal or command prompt and run:
 ```
 git clone https://github.com/Shirshak52/PriceOptimizationSystemCW.git
 ```
 
 
-### 2. **Open the project**  
-Open the cloned folder in Visual Studio Code.
 
 
-### 3. **Set up virtual environment**  
-Run these commands one after the other in the terminal of VSCode.
+### 2. **Open the Project**  
+Navigate to the cloned folder and open it in Visual Studio Code.
 
-* Windows (cmd-only):  
+
+### 3. **Set Up Virtual Environment**  
+Open the integrated terminal in VSCode and run these commands one after the other:
+
+* Windows (Command Prompt, NOT Powershell):  
 ```
-python -m venv venv
-```
-```  
+python -m venv venv 
 venv\Scripts\activate
 ```  
 
 * Mac/Linux:  
 ```
 python3 -m venv venv
-```
-```
 source venv/bin/activate
 ```
-OR
+
+Alternatively, if python3 doesn't work directly, replace it with the full path to your Python installation:
 ```
-full_path_to_python_installed_location -m venv venv
-```  
-```
+full_path_to_your_python_executable -m venv venv
 source venv/bin/activate
 ```
 
 
 ### 4. **Install all dependencies**  
-In the VSCode terminal, run:  
+With the virtual environment activated, run this command in the VSCode terminal:  
 ```
 pip install -r requirements.txt
 ```
 
 
 ### 5. **Create `.env` file**  
-At the root folder, create a file named `.env`.  
-Copy the contents from `.env.example` and paste it into `.env`.
+At the root of the project folder, create a new file named EXACTLY `.env`.  
+Copy all contents from the provided `.env.example file` and paste them into the `.env` file.
 
-#### **Replace:**  
-- `SECRET_KEY` value with any random long string  
-- `SQLALCHEMY_DATABASE_URI` value with your actual username, password, host, port, and dbname
+#### **Important Replacements in `.env`:**  
+- Replace the `SECRET_KEY` value with any random, long string  
+- Update the `SQLALCHEMY_DATABASE_URI` value with your actual PostgreSQL credentials
 
 **Note**:
-* `.env` variables MUST NOT have spaces around the `=`. The convention MUST be `varname=value`. Also note that the convention is `VARNAME=value` (all capital letters for variables).
-* PostgreSQL must be installed and set up using pgAdmin. Make sure the ***user and database exist (if not, create them)*** and have all privileges.
+* `.env` variables MUST NOT have spaces around the `=` and MUST be all capital letters. The convention MUST be `VARNAME=value`.
+* Ensure PostgreSQL is installed and running and that the user and database you specify in `SQLALCHEMY_DATABASE_URI` actually exist ***(if not, create them)*** and have all privileges.
 
 
-### 6. **Kill & reopen terminal**  
-Close the current terminal in VS Code and open a new one.  
-If you're on Windows, use CMD (not PowerShell).
+### 6. **Restart Terminal**  
+Close the current VSCode terminal and open a new one.  
+If you're on Windows, ensure that you are using CMD (NOT PowerShell).
 
 
 ### 7. **Reset migrations**  
-Delete the entire `migrations` folder. Then in the terminal, run (one after the other):  
+Delete the entire `migrations` folder. Then, in the VSCode terminal, run these commands one after another:  
 ```
 flask db init
-```
-```
-flask db migrate -m "Any comments you would like to include"
-```
-```
+flask db migrate -m "Initial database setup"
 flask db upgrade
 ```
 
-**Confirm via pgAdmin that the tables are created.**
+**Confirm via pgAdmin that the tables have been successfully created.**
 
 
 ### 8. **Insert dummy data**  
-Open `pgAdmin`, go to Query Tool, paste the SQL insert statements (given below), and execute them.  
+Open `pgAdmin`, connect to your database, go to the Query Tool, paste the following SQL `INSERT` statements, and execute them:  
 
 ```
 INSERT INTO supermarket (id, name, phone_number, email, password, role)
@@ -113,18 +147,24 @@ commit;
 ----------------------------------------
 
 Done! The app is now ready to run locally.  
-To run the app, run this command in the VSCode terminal:  
+**To run the app**, run this command in the VSCode terminal:  
 ```
 flask run
 ```
 
 
-To log in, enter any one of the emails in the dummy data. The corresponding password will be as follows:  
+**Login Credentials**  
+To log in, you can enter any one of the emails provided in the dummy data above. The corresponding passwords are straightforward:  
 * The password for `branch1@example.com` is `branch1`  
-* The password for `branch2@example.com` is `branch2`  
+* The password for `branch2@example.com` is `branch2`
+* The password for `supermarket1@example.com` is `supermarket1`
 and so on.
 
-**Note**: Make sure you have internet access while running the project, as it uses CDN links to various resources.
+**Note**: Ensure you have internet access while running the project, as it uses CDN links to various resources.
 
 **Demo Dataset**: Sample datasets have been included in the `/demo_data/` folder for testing and demonstration purposes. The names of the files are self-explanatory.
+
+**P.S.** The application does NOT have the following features due to some reasons/assumptions made during development:
+- **No account registration/management features** (**assumption:** sales data is sensitive, so supermarkets directly pay the developer for account registration/management, ensuring trust and security as well as a source of income for the developer)
+- **No feature to access past reports** (**reason:** time and scope constraints, possible future enhancement)
 
